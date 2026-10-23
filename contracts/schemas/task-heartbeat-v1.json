@@ -1,0 +1,48 @@
+{
+  "additionalProperties": false,
+  "description": "The service owns the clock, lease extension and cancellation response.",
+  "properties": {
+    "contractVersion": {
+      "const": "agent-task-v1",
+      "title": "Contractversion",
+      "type": "string"
+    },
+    "taskId": {
+      "format": "uuid",
+      "title": "Taskid",
+      "type": "string"
+    },
+    "attemptId": {
+      "format": "uuid",
+      "title": "Attemptid",
+      "type": "string"
+    },
+    "fencingToken": {
+      "minimum": 1,
+      "title": "Fencingtoken",
+      "type": "integer"
+    },
+    "workerId": {
+      "minLength": 1,
+      "title": "Workerid",
+      "type": "string"
+    },
+    "correlationId": {
+      "minLength": 1,
+      "title": "Correlationid",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contractVersion",
+    "taskId",
+    "attemptId",
+    "fencingToken",
+    "workerId",
+    "correlationId"
+  ],
+  "title": "AgentTaskHeartbeat",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:devproof:contracts:task-heartbeat-v1"
+}

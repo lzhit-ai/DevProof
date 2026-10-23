@@ -1,0 +1,11 @@
+.git
+.build
+**/.venv
+**/node_modules
+**/__pycache__
+**/*.egg-info
+**/target
+**/.env
+**/.env.*
+artifacts
+*.tar.gz

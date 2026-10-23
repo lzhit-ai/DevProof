@@ -1,0 +1,42 @@
+# Runtime secrets and local configuration
+.env
+.env.*
+!.env.example
+!infra/.env.prod.example
+!infra/.env.devproof.prod.example
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+*.egg-info/
+htmlcov/
+.coverage
+
+# Node/Vite
+node_modules/
+dist/
+.vite/
+*.tsbuildinfo
+
+# Containers, artifacts and runtime data
+postgres-data/
+artifacts/
+*.log
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+
+.playwright-mcp/
+
+# Java build and task-local dependency cache
+.build/
+business-server/target/

@@ -1,0 +1,70 @@
+from enum import StrEnum
+
+
+class ProjectRole(StrEnum):
+    SUBMITTER = "SUBMITTER"
+    REVIEWER = "REVIEWER"
+    ADMIN = "ADMIN"
+
+
+class AssessmentProfile(StrEnum):
+    """The business boundary that defines a snapshot, run, template and formal record."""
+
+    DELIVERY_VERIFICATION = "DELIVERY_VERIFICATION"
+    PROJECT_STATUS_SUMMARY = "PROJECT_STATUS_SUMMARY"
+    SECURITY_BASELINE = "SECURITY_BASELINE"
+    QUALITY_TREND = "QUALITY_TREND"
+
+
+class ExternalConnectionProvider(StrEnum):
+    GITHUB = "GITHUB"
+
+
+class ExternalResourceType(StrEnum):
+    ISSUE = "ISSUE"
+    PULL_REQUEST = "PULL_REQUEST"
+    MILESTONE = "MILESTONE"
+
+
+class SourceSyncStatus(StrEnum):
+    RUNNING = "RUNNING"
+    SUCCEEDED = "SUCCEEDED"
+    PARTIALLY_SUCCEEDED = "PARTIALLY_SUCCEEDED"
+    FAILED = "FAILED"
+
+
+class DeliveryPlanningStatus(StrEnum):
+    OPEN = "OPEN"
+    IN_PROGRESS = "IN_PROGRESS"
+    DECLARED_DONE = "DECLARED_DONE"
+    CANCELLED = "CANCELLED"
+
+
+class DeliveryVerificationStatus(StrEnum):
+    NOT_ASSESSED = "NOT_ASSESSED"
+    PARTIALLY_SUPPORTED = "PARTIALLY_SUPPORTED"
+    CONFIRMED = "CONFIRMED"
+    CONFLICT = "CONFLICT"
+    INSUFFICIENT_EVIDENCE = "INSUFFICIENT_EVIDENCE"
+
+
+class SourceProcessingStatus(StrEnum):
+    UPLOADED = "UPLOADED"
+    PARSING = "PARSING"
+    OCR_CHECKING = "OCR_CHECKING"
+    CHUNKING = "CHUNKING"
+    INDEXING = "INDEXING"
+    READY = "READY"
+    FAILED = "FAILED"
+
+
+class CycleStatus(StrEnum):
+    DRAFT = "DRAFT"
+    ANALYZING = "ANALYZING"
+    DRAFT_READY = "DRAFT_READY"
+    NEEDS_EVIDENCE = "NEEDS_EVIDENCE"
+    NEEDS_CONFIRMATION = "NEEDS_CONFIRMATION"
+    PENDING_REVIEW = "PENDING_REVIEW"
+    REJECTED = "REJECTED"
+    APPROVED = "APPROVED"
+    PUBLISHED = "PUBLISHED"

@@ -1,0 +1,743 @@
+{
+  "sourceHead": "eeea296",
+  "capturedOn": "2026-10-21",
+  "apiPrefix": "/api/v1",
+  "routeCount": 105,
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/api/v1/analysis-runs/{run_id}",
+      "handler": "backend/app/api/routes/analysis.py:get_run",
+      "responseModel": "AnalysisRunResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analysis-runs/{run_id}/cancel",
+      "handler": "backend/app/api/routes/analysis.py:cancel",
+      "responseModel": "AnalysisRunResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analysis-runs/{run_id}/code-review",
+      "handler": "backend/app/api/routes/analysis.py:code_review",
+      "responseModel": "CodeReviewResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analysis-runs/{run_id}/events",
+      "handler": "backend/app/api/routes/analysis.py:events",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analysis-runs/{run_id}/orchestration",
+      "handler": "backend/app/api/routes/orchestration.py:run_orchestration",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analysis-runs/{run_id}/results",
+      "handler": "backend/app/api/routes/analysis.py:results",
+      "responseModel": "list[AnalysisResultResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analysis-runs/{run_id}/results/{result_id}/human-decisions",
+      "handler": "backend/app/api/routes/analysis.py:decide_result",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/analysis-runs/{run_id}/tool-executions",
+      "handler": "backend/app/api/routes/agent_tool_executions.py:get_tool_executions",
+      "responseModel": "list[AgentToolExecutionResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/analysis-runs/{run_id}/tool-executions/{execution_id}/import-manual-evidence",
+      "handler": "backend/app/api/routes/agent_tool_executions.py:import_manual_evidence",
+      "responseModel": "AgentToolExecutionImportResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "handler": "backend/app/api/routes/auth.py:login",
+      "responseModel": "TokenResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/auth/me",
+      "handler": "backend/app/api/routes/auth.py:get_current_user",
+      "responseModel": "CurrentUserResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/auth/register",
+      "handler": "backend/app/api/routes/auth.py:register",
+      "responseModel": "TokenResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cycles/{cycle_id}/external-evidence",
+      "handler": "backend/app/api/routes/external_evidence.py:create",
+      "responseModel": "ExternalEvidenceResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cycles/{cycle_id}/git-snapshots",
+      "handler": "backend/app/api/routes/git.py:freeze",
+      "responseModel": "GitSnapshotResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cycles/{cycle_id}/input-snapshots",
+      "handler": "backend/app/api/routes/snapshots.py:freeze",
+      "responseModel": "SnapshotResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cycles/{cycle_id}/input-snapshots/formal",
+      "handler": "backend/app/api/routes/snapshots.py:freeze_formal",
+      "responseModel": "SnapshotResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cycles/{cycle_id}/manual-evidence",
+      "handler": "backend/app/api/routes/manual_evidence.py:create",
+      "responseModel": "ManualEvidenceResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/cycles/{cycle_id}/reports/from-run/{run_id}",
+      "handler": "backend/app/api/routes/reports.py:draft",
+      "responseModel": "ReportResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/git-snapshots/{snapshot_id}/diff",
+      "handler": "backend/app/api/routes/git.py:get_diff",
+      "responseModel": "GitSnapshotDiffResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/health/live",
+      "handler": "backend/app/api/routes/health.py:live",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/health/ready",
+      "handler": "backend/app/api/routes/health.py:ready",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/input-snapshots/{snapshot_id}/analysis-runs",
+      "handler": "backend/app/api/routes/analysis.py:start",
+      "responseModel": "AnalysisRunResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/input-snapshots/{snapshot_id}/evidence/{evidence_id}",
+      "handler": "backend/app/api/routes/evidence.py:get_evidence",
+      "responseModel": "EvidenceResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/input-snapshots/{snapshot_id}/questions",
+      "handler": "backend/app/api/routes/questions.py:ask",
+      "responseModel": "EvidenceQuestionResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/input-snapshots/{snapshot_id}/search",
+      "handler": "backend/app/api/routes/retrieval.py:search",
+      "responseModel": "SnapshotSearchResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/knowledge-bases",
+      "handler": "backend/app/api/routes/sources.py:get_all_knowledge_bases",
+      "responseModel": "list[KnowledgeBaseResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects",
+      "handler": "backend/app/api/routes/projects.py:get_projects",
+      "responseModel": "list[ProjectResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects",
+      "handler": "backend/app/api/routes/projects.py:create",
+      "responseModel": "ProjectResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/projects/{project_id}",
+      "handler": "backend/app/api/routes/projects.py:remove_project",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}",
+      "handler": "backend/app/api/routes/projects.py:get_project",
+      "responseModel": "ProjectResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/agent-orchestration",
+      "handler": "backend/app/api/routes/orchestration.py:list_project_orchestration",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/agent-orchestration/capabilities",
+      "handler": "backend/app/api/routes/orchestration.py:create_capability",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/agent-orchestration/capabilities/{capability_id}/deactivate",
+      "handler": "backend/app/api/routes/orchestration.py:deactivate_capability",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/agent-orchestration/capabilities/{capability_id}/latest-version",
+      "handler": "backend/app/api/routes/orchestration.py:get_latest_capability_version",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/agent-orchestration/capabilities/{capability_id}/versions",
+      "handler": "backend/app/api/routes/orchestration.py:version_capability",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/agent-orchestration/task-bindings",
+      "handler": "backend/app/api/routes/orchestration.py:list_project_task_bindings",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/agent-orchestration/templates",
+      "handler": "backend/app/api/routes/orchestration.py:create_orchestration_template",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/agent-orchestration/tools",
+      "handler": "backend/app/api/routes/orchestration.py:create_tool",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/delivery-items",
+      "handler": "backend/app/api/routes/external_sources.py:get_delivery_items",
+      "responseModel": "list[DeliveryItemResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/delivery-items/{delivery_item_id}/agent-change-candidate-targets",
+      "handler": "backend/app/api/routes/delivery_associations.py:get_agent_candidate_targets",
+      "responseModel": "list[AgentChangeCandidateTargetResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/delivery-items/{delivery_item_id}/agent-change-candidates",
+      "handler": "backend/app/api/routes/delivery_associations.py:propose_change_candidates",
+      "responseModel": "AgentChangeProposalResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/delivery-items/{delivery_item_id}/change-links",
+      "handler": "backend/app/api/routes/delivery_associations.py:get_change_links",
+      "responseModel": "list[DeliveryChangeLinkResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/delivery-items/{delivery_item_id}/change-links",
+      "handler": "backend/app/api/routes/delivery_associations.py:create_confirmed_change_link",
+      "responseModel": "DeliveryChangeLinkResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/delivery-items/{delivery_item_id}/discover-platform-links",
+      "handler": "backend/app/api/routes/delivery_associations.py:discover_links",
+      "responseModel": "PlatformLinkDiscoveryResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/delivery-items/{delivery_item_id}/source-links",
+      "handler": "backend/app/api/routes/delivery_associations.py:get_source_links",
+      "responseModel": "list[DeliveryItemSourceLinkResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/delivery-items/{delivery_item_id}/source-links",
+      "handler": "backend/app/api/routes/delivery_associations.py:create_document_source_link",
+      "responseModel": "DeliveryItemSourceLinkResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/external-connections",
+      "handler": "backend/app/api/routes/external_sources.py:get_external_connections",
+      "responseModel": "list[ExternalConnectionResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/external-connections",
+      "handler": "backend/app/api/routes/external_sources.py:create_external_connection",
+      "responseModel": "ExternalConnectionResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/external-connections/{connection_id}/sync",
+      "handler": "backend/app/api/routes/external_sources.py:sync_external_connection",
+      "responseModel": "SourceSyncRunResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/git-repositories",
+      "handler": "backend/app/api/routes/git.py:list_registered_repositories",
+      "responseModel": "list[GitRepositoryResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/git-repositories",
+      "handler": "backend/app/api/routes/git.py:register",
+      "responseModel": "GitRepositoryResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/health-snapshots",
+      "handler": "backend/app/api/routes/project_status.py:get_health_snapshots",
+      "responseModel": "list[ProjectHealthSnapshotResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/health-snapshots",
+      "handler": "backend/app/api/routes/project_status.py:create_health_snapshot",
+      "responseModel": "ProjectHealthSnapshotResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/health-snapshots/{health_snapshot_id}",
+      "handler": "backend/app/api/routes/project_status.py:get_health_snapshot",
+      "responseModel": "ProjectHealthSnapshotResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/knowledge-bases",
+      "handler": "backend/app/api/routes/sources.py:get_knowledge_bases",
+      "responseModel": "list[KnowledgeBaseResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/knowledge-bases",
+      "handler": "backend/app/api/routes/sources.py:create_knowledge_base_endpoint",
+      "responseModel": "KnowledgeBaseResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/knowledge-bases/mount",
+      "handler": "backend/app/api/routes/sources.py:mount_knowledge_base_endpoint",
+      "responseModel": "KnowledgeBaseResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/projects/{project_id}/knowledge-bases/{knowledge_base_id}",
+      "handler": "backend/app/api/routes/sources.py:unmount_knowledge_base_endpoint",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/members",
+      "handler": "backend/app/api/routes/projects.py:add_project_member",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/peripheral-profile-runs",
+      "handler": "backend/app/api/routes/peripheral_profiles.py:get_runs",
+      "responseModel": "list[PeripheralProfileRunResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/peripheral-profile-runs",
+      "handler": "backend/app/api/routes/peripheral_profiles.py:create_run",
+      "responseModel": "PeripheralProfileRunResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/project-summary-drafts",
+      "handler": "backend/app/api/routes/project_status.py:get_summary_drafts",
+      "responseModel": "list[ProjectSummaryDraftResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/project-summary-drafts",
+      "handler": "backend/app/api/routes/project_status.py:create_summary_draft",
+      "responseModel": "ProjectSummaryDraftResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/project-summary-drafts/{draft_id}/publish",
+      "handler": "backend/app/api/routes/project_status.py:publish_summary_draft",
+      "responseModel": "ProjectSummaryRecordResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/project-summary-records",
+      "handler": "backend/app/api/routes/project_status.py:get_summary_records",
+      "responseModel": "list[ProjectSummaryRecordResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/published-records",
+      "handler": "backend/app/api/routes/reports.py:get_published_records",
+      "responseModel": "list[PublishedRecordResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/published-records/{record_id}",
+      "handler": "backend/app/api/routes/reports.py:get_record",
+      "responseModel": "PublishedRecordResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/quality-trend",
+      "handler": "backend/app/api/routes/security_baselines.py:get_quality_trend",
+      "responseModel": "QualityTrendResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/report-versions",
+      "handler": "backend/app/api/routes/reports.py:get_project_reports",
+      "responseModel": "list[ProjectReportResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/report-versions/{report_id}",
+      "handler": "backend/app/api/routes/reports.py:get_report",
+      "responseModel": "ProjectReportResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/report-versions/{report_id}/content",
+      "handler": "backend/app/api/routes/reports.py:get_report_content_view",
+      "responseModel": "ReportContentResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/retrieval-indexes",
+      "handler": "backend/app/api/routes/retrieval_indexes.py:list_indexes",
+      "responseModel": "list[RetrievalIndexResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/retrieval-indexes/rebuild",
+      "handler": "backend/app/api/routes/retrieval_indexes.py:rebuild",
+      "responseModel": "RetrievalIndexRebuildResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/retrieval-indexes/rebuild-runs",
+      "handler": "backend/app/api/routes/retrieval_indexes.py:list_build_runs",
+      "responseModel": "list[RetrievalIndexBuildRunResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/security-baseline-records",
+      "handler": "backend/app/api/routes/security_baselines.py:get_baseline_records",
+      "responseModel": "list[SecurityBaselineRecordResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/security-baselines",
+      "handler": "backend/app/api/routes/security_baselines.py:get_baselines",
+      "responseModel": "list[SecurityBaselineSnapshotResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/security-baselines",
+      "handler": "backend/app/api/routes/security_baselines.py:create_baseline",
+      "responseModel": "SecurityBaselineSnapshotResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/security-baselines/{baseline_id}/confirm",
+      "handler": "backend/app/api/routes/security_baselines.py:confirm_baseline",
+      "responseModel": "SecurityBaselineRecordResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/projects/{project_id}/security-findings/{finding_id}/status",
+      "handler": "backend/app/api/routes/security_baselines.py:update_finding_status",
+      "responseModel": "SecurityFindingResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/security-scan-artifacts",
+      "handler": "backend/app/api/routes/security_baselines.py:get_scan_artifacts",
+      "responseModel": "list[SecurityScanArtifactResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/security-scan-artifacts",
+      "handler": "backend/app/api/routes/security_baselines.py:create_scan_artifact",
+      "responseModel": "SecurityScanArtifactResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/security-scan-artifacts/{artifact_id}/explanation",
+      "handler": "backend/app/api/routes/security_baselines.py:get_scan_artifact_explanation",
+      "responseModel": "SecurityArtifactExplanationResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/security-scan-artifacts/{artifact_id}/findings",
+      "handler": "backend/app/api/routes/security_baselines.py:get_findings",
+      "responseModel": "list[SecurityFindingResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/source-sync-runs",
+      "handler": "backend/app/api/routes/external_sources.py:get_source_sync_runs",
+      "responseModel": "list[SourceSyncRunResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/sources",
+      "handler": "backend/app/api/routes/sources.py:list_sources",
+      "responseModel": "list[SourceDetailResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/sources",
+      "handler": "backend/app/api/routes/sources.py:upload",
+      "responseModel": "SourceResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/v1/projects/{project_id}/sources/{source_id}",
+      "handler": "backend/app/api/routes/sources.py:delete_source_endpoint",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/sources/{source_id}",
+      "handler": "backend/app/api/routes/sources.py:read_content",
+      "responseModel": "SourceContentResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/sources/{source_id}/chunks",
+      "handler": "backend/app/api/routes/sources.py:list_chunks",
+      "responseModel": "list[ChunkItemResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/sources/{source_id}/download",
+      "handler": "backend/app/api/routes/sources.py:download_source",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/verification-tasks",
+      "handler": "backend/app/api/routes/tasks.py:get_tasks",
+      "responseModel": "list[VerificationTaskListResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/verification-tasks",
+      "handler": "backend/app/api/routes/tasks.py:create",
+      "responseModel": "TaskResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/verification-tasks/{task_id}/cycles",
+      "handler": "backend/app/api/routes/tasks.py:create_cycle",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/{project_id}/verification-tasks/{task_id}/delivery-claims",
+      "handler": "backend/app/api/routes/tasks.py:get_delivery_claims",
+      "responseModel": "list[DeliveryClaimResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/projects/{project_id}/verification-tasks/{task_id}/delivery-claims",
+      "handler": "backend/app/api/routes/tasks.py:confirm_claims",
+      "responseModel": "list[DeliveryClaimResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/projects/{project_id}/verification-tasks/{task_id}/delivery-claims/propose",
+      "handler": "backend/app/api/routes/tasks.py:propose_claims",
+      "responseModel": "list[DeliveryClaimResponse]",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/projects/{project_id}/verification-tasks/{task_id}/delivery-item",
+      "handler": "backend/app/api/routes/tasks.py:bind_delivery_item",
+      "responseModel": "TaskResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/report-versions/{report_id}",
+      "handler": "backend/app/api/routes/reports.py:update",
+      "responseModel": "ReportResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/report-versions/{report_id}/approve",
+      "handler": "backend/app/api/routes/reports.py:approve_report",
+      "responseModel": "ReportResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/report-versions/{report_id}/publish",
+      "handler": "backend/app/api/routes/reports.py:publish_report",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/report-versions/{report_id}/reject",
+      "handler": "backend/app/api/routes/reports.py:reject_report",
+      "responseModel": "ReportResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/report-versions/{report_id}/request-changes",
+      "handler": "backend/app/api/routes/reports.py:changes",
+      "responseModel": "ReportResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/report-versions/{report_id}/submit",
+      "handler": "backend/app/api/routes/reports.py:submit",
+      "responseModel": "ReportResponse",
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "PUT",
+      "path": "/api/v1/verification-tasks/{task_id}/agent-orchestration",
+      "handler": "backend/app/api/routes/orchestration.py:bind_orchestration_template",
+      "responseModel": null,
+      "currentOwner": "PYTHON"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/verification-tasks/{task_id}/latest-analysis-run",
+      "handler": "backend/app/api/routes/analysis.py:get_latest_task_run",
+      "responseModel": "AnalysisRunResponse",
+      "currentOwner": "PYTHON"
+    }
+  ]
+}

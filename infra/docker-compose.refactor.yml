@@ -1,0 +1,185 @@
+# Java/Python development topology. Uses the existing infra volume names.
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ai_codereview}
+      POSTGRES_USER: ${POSTGRES_USER:-ai_codereview}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+
+  migrate:
+    image: devproof-business:local
+    build:
+      context: ..
+      dockerfile: business-server/Dockerfile
+    profiles: ["operations"]
+    command: ["db", "migrate"]
+    environment:
+      JAVA_DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-ai_codereview}
+      POSTGRES_USER: ${POSTGRES_USER:-ai_codereview}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  redis:
+    image: redis:7.4.11-alpine3.21
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  business:
+    image: devproof-business:local
+    build:
+      context: ..
+      dockerfile: business-server/Dockerfile
+    environment:
+      JAVA_DATABASE_URL: jdbc:postgresql://postgres:5432/${POSTGRES_DB:-ai_codereview}
+      POSTGRES_USER: ${POSTGRES_USER:-ai_codereview}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET}
+      MODEL_CREDENTIAL_ENCRYPTION_KEY: ${MODEL_CREDENTIAL_ENCRYPTION_KEY:?set MODEL_CREDENTIAL_ENCRYPTION_KEY}
+      USER_MODEL_ALLOWED_HOSTS: ${USER_MODEL_ALLOWED_HOSTS:-api.deepseek.com,api.openai.com,openrouter.ai,dashscope.aliyuncs.com,api.moonshot.cn,api.siliconflow.cn,open.bigmodel.cn}
+      JAVA_CORS_ORIGINS: http://localhost:5173
+      REDIS_HOST: redis
+      AGENT_WORKER_CREDENTIALS: ${AGENT_WORKER_CREDENTIALS:?set AGENT_WORKER_CREDENTIALS}
+      BUSINESS_OWNERSHIP_TOKEN: ${BUSINESS_OWNERSHIP_TOKEN:-}
+      GENERATION_PROVIDER: ${GENERATION_PROVIDER:-deepseek}
+      GENERATION_MODEL: ${GENERATION_MODEL:-deepseek-v4-flash}
+      GENERATION_BASE_URL: ${GENERATION_BASE_URL:-https://api.deepseek.com}
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-dashscope}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-v4}
+      EMBEDDING_BASE_URL: ${EMBEDDING_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}
+      EMBEDDING_DIMENSIONS: ${EMBEDDING_DIMENSIONS:-768}
+      GITHUB_SOURCE_TOKEN: ${GITHUB_SOURCE_TOKEN:-}
+      GIT_CREDENTIAL_REFS: ${GIT_CREDENTIAL_REFS:-GITHUB_SOURCE_TOKEN}
+      GITHUB_SOURCE_SECRET_REFS: ${GITHUB_SOURCE_SECRET_REFS:-GITHUB_SOURCE_TOKEN}
+      GITHUB_SYNC_TIMEOUT_SECONDS: ${GITHUB_SYNC_TIMEOUT_SECONDS:-15}
+      GITHUB_SYNC_RESPONSE_LIMIT_BYTES: ${GITHUB_SYNC_RESPONSE_LIMIT_BYTES:-2097152}
+      GITHUB_SYNC_MAX_PAGES: ${GITHUB_SYNC_MAX_PAGES:-5}
+      JOB_LEASE_SECONDS: ${JOB_LEASE_SECONDS:-60}
+      JOB_MAX_ATTEMPTS: ${JOB_MAX_ATTEMPTS:-3}
+      INDEX_BUILD_TIMEOUT_SECONDS: ${INDEX_BUILD_TIMEOUT_SECONDS:-7200}
+      SOURCE_REQUEST_MAX_BYTES: ${SOURCE_REQUEST_MAX_BYTES:-526385152}
+      COMPUTE_API_URL: http://agent-worker:8090
+      COMPUTE_CONCURRENCY: ${COMPUTE_CONCURRENCY:-1}
+      COMPUTE_SERVICE_TOKEN: ${COMPUTE_SERVICE_TOKEN:?set COMPUTE_SERVICE_TOKEN}
+      COMPUTE_TIMEOUT_SECONDS: ${COMPUTE_TIMEOUT_SECONDS:-1800}
+      COMPUTE_RESULT_MAX_BYTES: ${COMPUTE_RESULT_MAX_BYTES:-268435456}
+      SOURCE_MAX_BYTES: ${SOURCE_MAX_BYTES:-104857600}
+      ARTIFACT_ROOT: /artifacts
+      BUSINESS_ARTIFACT_WRITE_ROOT: /artifacts/java
+      AGENT_TOOL_ALLOWED_HOSTS: ${AGENT_TOOL_ALLOWED_HOSTS:-}
+      AGENT_TOOL_SECRET_REFS: ${AGENT_TOOL_SECRET_REFS:-}
+      CODE_REVIEW_INPUT_CHAR_BUDGET: ${CODE_REVIEW_INPUT_CHAR_BUDGET:-96000}
+      CODE_REVIEW_CHALLENGE_INPUT_CHAR_BUDGET: ${CODE_REVIEW_CHALLENGE_INPUT_CHAR_BUDGET:-64000}
+      CODE_REVIEW_CHALLENGE_MAX_FINDINGS: ${CODE_REVIEW_CHALLENGE_MAX_FINDINGS:-30}
+      CODE_REVIEW_CONTEXT_MAX_SUPPLEMENT_REQUESTS: ${CODE_REVIEW_CONTEXT_MAX_SUPPLEMENT_REQUESTS:-5}
+      CODE_REVIEW_CONTEXT_MAX_FILE_BYTES: ${CODE_REVIEW_CONTEXT_MAX_FILE_BYTES:-262144}
+      CODE_REVIEW_CONTEXT_MAX_TOTAL_BYTES: ${CODE_REVIEW_CONTEXT_MAX_TOTAL_BYTES:-1048576}
+      AGENT_TOOL_TIMEOUT_SECONDS: ${AGENT_TOOL_TIMEOUT_SECONDS:-10}
+      AGENT_TOOL_RESPONSE_LIMIT_BYTES: ${AGENT_TOOL_RESPONSE_LIMIT_BYTES:-262144}
+    volumes:
+      - artifact-volume:/artifacts:ro
+      - repository-cache:/repository-cache
+      - java-artifacts:/artifacts/java
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/api/v1/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  agent-worker:
+    build:
+      context: ..
+      dockerfile: agent-service/Dockerfile
+    environment:
+      BUSINESS_API_URL: http://business:8080
+      WORKER_ID: ${AGENT_WORKER_ID:-agent-worker-local}
+      AGENT_SERVICE_TOKEN: ${AGENT_SERVICE_TOKEN:?set AGENT_SERVICE_TOKEN}
+      COMPUTE_SERVICE_TOKEN: ${COMPUTE_SERVICE_TOKEN:?set COMPUTE_SERVICE_TOKEN}
+      COMPUTE_TIMEOUT_SECONDS: ${COMPUTE_TIMEOUT_SECONDS:-1800}
+      COMPUTE_RESULT_MAX_BYTES: ${COMPUTE_RESULT_MAX_BYTES:-268435456}
+      COMPUTE_CONCURRENCY: ${COMPUTE_CONCURRENCY:-1}
+      SOURCE_MAX_BYTES: ${SOURCE_MAX_BYTES:-104857600}
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-dashscope}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-v4}
+      EMBEDDING_BASE_URL: ${EMBEDDING_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}
+      EMBEDDING_API_KEY: ${EMBEDDING_API_KEY:-}
+      EMBEDDING_DIMENSIONS: ${EMBEDDING_DIMENSIONS:-768}
+      MINERU_API_BASE_URL: ${MINERU_API_BASE_URL:-https://mineru.net}
+      MINERU_API_TOKEN: ${MINERU_API_TOKEN:-}
+      MINERU_MODEL_VERSION: ${MINERU_MODEL_VERSION:-pipeline}
+      MINERU_FORCE_OCR: ${MINERU_FORCE_OCR:-true}
+      MINERU_LANGUAGE: ${MINERU_LANGUAGE:-ch}
+      MINERU_TIMEOUT_SECONDS: ${MINERU_TIMEOUT_SECONDS:-300}
+      MINERU_POLL_INTERVAL_SECONDS: ${MINERU_POLL_INTERVAL_SECONDS:-5}
+      MINERU_RESULT_MAX_BYTES: ${MINERU_RESULT_MAX_BYTES:-33554432}
+      REPOSITORY_CACHE_ROOT: /repository-cache
+      GITHUB_SOURCE_TOKEN: ${GITHUB_SOURCE_TOKEN:-}
+      GIT_CREDENTIAL_REFS: ${GIT_CREDENTIAL_REFS:-GITHUB_SOURCE_TOKEN}
+      GIT_CAPTURE_TIMEOUT_SECONDS: ${GIT_CAPTURE_TIMEOUT_SECONDS:-90}
+      GIT_COMMAND_TIMEOUT_SECONDS: ${GIT_COMMAND_TIMEOUT_SECONDS:-60}
+      GIT_SSH_CONNECT_TIMEOUT_SECONDS: ${GIT_SSH_CONNECT_TIMEOUT_SECONDS:-10}
+      GIT_DIFF_MAX_BYTES: ${GIT_DIFF_MAX_BYTES:-16777216}
+      GIT_TREE_MAX_BYTES: ${GIT_TREE_MAX_BYTES:-8388608}
+      CODE_REVIEW_CONTEXT_MAX_FILE_BYTES: ${CODE_REVIEW_CONTEXT_MAX_FILE_BYTES:-262144}
+      CODE_REVIEW_CONTEXT_MAX_TOTAL_BYTES: ${CODE_REVIEW_CONTEXT_MAX_TOTAL_BYTES:-1048576}
+      CODE_REVIEW_CONTEXT_MAX_RELATED_SYMBOLS: ${CODE_REVIEW_CONTEXT_MAX_RELATED_SYMBOLS:-12}
+    volumes:
+      - repository-cache:/repository-cache
+    healthcheck:
+      test: ["CMD", "python", "-c", "import json,urllib.request; state=json.load(urllib.request.urlopen('http://localhost:8090/internal/v1/health/live', timeout=3)); assert state['workerStatus']=='RUNNING'"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    depends_on:
+      business:
+        condition: service_healthy
+
+  gateway:
+    image: nginx:1.28.0-alpine
+    volumes:
+      - ./nginx.refactor.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      business:
+        condition: service_healthy
+
+  frontend:
+    build: ../frontend
+    ports:
+      - "127.0.0.1:5173:5173"
+    environment:
+      API_PROXY_TARGET: http://gateway:8080
+      CHOKIDAR_USEPOLLING: "true"
+      CHOKIDAR_INTERVAL: "500"
+    volumes:
+      - ../frontend:/app
+      - frontend-node-modules:/app/node_modules
+    depends_on:
+      gateway:
+        condition: service_started
+
+volumes:
+  postgres-data:
+  artifact-volume:
+  frontend-node-modules:
+  repository-cache:
+  java-artifacts:

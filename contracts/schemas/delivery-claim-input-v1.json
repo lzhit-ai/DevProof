@@ -1,0 +1,99 @@
+{
+  "$defs": {
+    "ClaimProposalDocument": {
+      "additionalProperties": false,
+      "properties": {
+        "sourceRevisionId": {
+          "format": "uuid",
+          "title": "Sourcerevisionid",
+          "type": "string"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "contentHash": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Contenthash",
+          "type": "string"
+        },
+        "extractedTextHash": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Extractedtexthash",
+          "type": "string"
+        },
+        "excerpt": {
+          "maxLength": 4000,
+          "title": "Excerpt",
+          "type": "string"
+        },
+        "excerptHash": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Excerpthash",
+          "type": "string"
+        }
+      },
+      "required": [
+        "sourceRevisionId",
+        "name",
+        "contentHash",
+        "extractedTextHash",
+        "excerpt",
+        "excerptHash"
+      ],
+      "title": "ClaimProposalDocument",
+      "type": "object"
+    },
+    "JsonValue": {}
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "delivery-claim-input-v1",
+      "title": "Schemaversion",
+      "type": "string"
+    },
+    "projectId": {
+      "format": "uuid",
+      "title": "Projectid",
+      "type": "string"
+    },
+    "taskId": {
+      "format": "uuid",
+      "title": "Taskid",
+      "type": "string"
+    },
+    "cycleId": {
+      "format": "uuid",
+      "title": "Cycleid",
+      "type": "string"
+    },
+    "sourceManifest": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Sourcemanifest",
+      "type": "object"
+    },
+    "documents": {
+      "items": {
+        "$ref": "#/$defs/ClaimProposalDocument"
+      },
+      "maxItems": 20,
+      "title": "Documents",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "projectId",
+    "taskId",
+    "cycleId",
+    "sourceManifest",
+    "documents"
+  ],
+  "title": "ClaimProposalInput",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:devproof:contracts:delivery-claim-input-v1"
+}

@@ -1,0 +1,69 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "contractVersion": {
+      "const": "agent-task-v1",
+      "title": "Contractversion",
+      "type": "string"
+    },
+    "taskId": {
+      "format": "uuid",
+      "title": "Taskid",
+      "type": "string"
+    },
+    "attemptId": {
+      "format": "uuid",
+      "title": "Attemptid",
+      "type": "string"
+    },
+    "fencingToken": {
+      "minimum": 1,
+      "title": "Fencingtoken",
+      "type": "integer"
+    },
+    "workerId": {
+      "minLength": 1,
+      "title": "Workerid",
+      "type": "string"
+    },
+    "correlationId": {
+      "minLength": 1,
+      "title": "Correlationid",
+      "type": "string"
+    },
+    "errorCode": {
+      "minLength": 1,
+      "title": "Errorcode",
+      "type": "string"
+    },
+    "messageRedacted": {
+      "minLength": 1,
+      "title": "Messageredacted",
+      "type": "string"
+    },
+    "reason": {
+      "enum": [
+        "FAILED",
+        "CANCELLED",
+        "BUDGET_EXHAUSTED"
+      ],
+      "title": "Reason",
+      "type": "string"
+    }
+  },
+  "required": [
+    "contractVersion",
+    "taskId",
+    "attemptId",
+    "fencingToken",
+    "workerId",
+    "correlationId",
+    "errorCode",
+    "messageRedacted",
+    "reason"
+  ],
+  "title": "AgentTaskFailure",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:devproof:contracts:task-failure-v1"
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "answer",
+    "fact_status"
+  ],
+  "properties": {
+    "answer": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 4000
+    },
+    "fact_status": {
+      "enum": [
+        "CONFIRMED",
+        "PARTIALLY_SUPPORTED",
+        "CONFLICTING",
+        "INSUFFICIENT_EVIDENCE",
+        "INFERENCE_REQUIRES_CONFIRMATION"
+      ]
+    }
+  }
+}

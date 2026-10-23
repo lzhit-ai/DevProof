@@ -1,0 +1,108 @@
+{
+  "$defs": {
+    "JsonValue": {}
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contractVersion": {
+      "const": "agent-task-v1",
+      "title": "Contractversion",
+      "type": "string"
+    },
+    "taskId": {
+      "format": "uuid",
+      "title": "Taskid",
+      "type": "string"
+    },
+    "attemptId": {
+      "format": "uuid",
+      "title": "Attemptid",
+      "type": "string"
+    },
+    "fencingToken": {
+      "minimum": 1,
+      "title": "Fencingtoken",
+      "type": "integer"
+    },
+    "workerId": {
+      "minLength": 1,
+      "title": "Workerid",
+      "type": "string"
+    },
+    "correlationId": {
+      "minLength": 1,
+      "title": "Correlationid",
+      "type": "string"
+    },
+    "eventSeq": {
+      "minimum": 1,
+      "title": "Eventseq",
+      "type": "integer"
+    },
+    "agentInstanceId": {
+      "format": "uuid",
+      "title": "Agentinstanceid",
+      "type": "string"
+    },
+    "parentAgentInstanceId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Parentagentinstanceid"
+    },
+    "toolCallId": {
+      "anyOf": [
+        {
+          "format": "uuid",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Toolcallid"
+    },
+    "occurredAt": {
+      "format": "date-time",
+      "title": "Occurredat",
+      "type": "string"
+    },
+    "eventType": {
+      "minLength": 1,
+      "title": "Eventtype",
+      "type": "string"
+    },
+    "payloadRedacted": {
+      "additionalProperties": {
+        "$ref": "#/$defs/JsonValue"
+      },
+      "title": "Payloadredacted",
+      "type": "object"
+    }
+  },
+  "required": [
+    "contractVersion",
+    "taskId",
+    "attemptId",
+    "fencingToken",
+    "workerId",
+    "correlationId",
+    "eventSeq",
+    "agentInstanceId",
+    "parentAgentInstanceId",
+    "toolCallId",
+    "occurredAt",
+    "eventType",
+    "payloadRedacted"
+  ],
+  "title": "AgentTaskEvent",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:devproof:contracts:task-event-v1"
+}

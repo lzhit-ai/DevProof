@@ -1,0 +1,103 @@
+{
+  "$defs": {
+    "JsonValue": {},
+    "QuestionEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "evidenceId": {
+          "format": "uuid",
+          "title": "Evidenceid",
+          "type": "string"
+        },
+        "sourceType": {
+          "title": "Sourcetype",
+          "type": "string"
+        },
+        "evidenceKind": {
+          "title": "Evidencekind",
+          "type": "string"
+        },
+        "excerpt": {
+          "title": "Excerpt",
+          "type": "string"
+        },
+        "locator": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Locator",
+          "type": "object"
+        },
+        "precision": {
+          "enum": [
+            "EXACT",
+            "APPROXIMATE",
+            "UNAVAILABLE"
+          ],
+          "title": "Precision",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidenceId",
+        "sourceType",
+        "evidenceKind",
+        "excerpt",
+        "locator",
+        "precision"
+      ],
+      "title": "QuestionEvidence",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "evidence-question-input-v1",
+      "title": "Schemaversion",
+      "type": "string"
+    },
+    "projectId": {
+      "format": "uuid",
+      "title": "Projectid",
+      "type": "string"
+    },
+    "snapshotId": {
+      "format": "uuid",
+      "title": "Snapshotid",
+      "type": "string"
+    },
+    "snapshotHash": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "title": "Snapshothash",
+      "type": "string"
+    },
+    "question": {
+      "maxLength": 2000,
+      "minLength": 1,
+      "title": "Question",
+      "type": "string"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/QuestionEvidence"
+      },
+      "maxItems": 20,
+      "minItems": 1,
+      "title": "Evidence",
+      "type": "array"
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "projectId",
+    "snapshotId",
+    "snapshotHash",
+    "question",
+    "evidence"
+  ],
+  "title": "EvidenceQuestionInput",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:devproof:contracts:evidence-question-input-v1"
+}

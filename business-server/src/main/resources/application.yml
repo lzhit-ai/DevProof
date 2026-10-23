@@ -1,0 +1,41 @@
+server:
+  port: ${BUSINESS_PORT:8080}
+spring:
+  application:
+    name: devproof-business
+  datasource:
+    url: ${JAVA_DATABASE_URL}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      connection-timeout: 3000
+  sql:
+    init:
+      mode: never
+  flyway:
+    enabled: false
+  servlet:
+    multipart:
+      max-file-size: ${SOURCE_MAX_BYTES:104857600}B
+      max-request-size: ${SOURCE_REQUEST_MAX_BYTES:526385152}B
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      connect-timeout: 500ms
+      timeout: 500ms
+mybatis:
+  type-handlers-package: ai.devproof.infrastructure
+  configuration:
+    call-setters-on-nulls: true
+devproof:
+  repository-cache-root: ${REPOSITORY_CACHE_ROOT:/repository-cache}
+  ownership-admin-token: ${BUSINESS_OWNERSHIP_TOKEN:}
+  jwt-secret: ${JWT_SECRET}
+  token-ttl-seconds: ${JWT_ACCESS_TTL_SECONDS:28800}
+  report-cache-ttl-seconds: ${REPORT_CACHE_TTL_SECONDS:3600}
+  report-cache-max-bytes: ${REPORT_CACHE_MAX_BYTES:2097152}
+  cors-origins: ${JAVA_CORS_ORIGINS:http://localhost:5173}
+  worker-token: ${AGENT_WORKER_CREDENTIALS:}
+  lease-seconds: ${AGENT_LEASE_SECONDS:60}

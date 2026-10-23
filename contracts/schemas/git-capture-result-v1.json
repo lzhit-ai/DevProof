@@ -1,0 +1,73 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "git-capture-result-v1",
+      "default": "git-capture-result-v1",
+      "title": "Schemaversion",
+      "type": "string"
+    },
+    "requestHash": {
+      "title": "Requesthash",
+      "type": "string"
+    },
+    "configurationHash": {
+      "title": "Configurationhash",
+      "type": "string"
+    },
+    "baseSha": {
+      "title": "Basesha",
+      "type": "string"
+    },
+    "targetSha": {
+      "title": "Targetsha",
+      "type": "string"
+    },
+    "mergeBaseSha": {
+      "title": "Mergebasesha",
+      "type": "string"
+    },
+    "effectiveBaseSha": {
+      "title": "Effectivebasesha",
+      "type": "string"
+    },
+    "diffHash": {
+      "title": "Diffhash",
+      "type": "string"
+    },
+    "diffBase64": {
+      "title": "Diffbase64",
+      "type": "string"
+    },
+    "bundleJson": {
+      "title": "Bundlejson",
+      "type": "string"
+    },
+    "bundleHash": {
+      "title": "Bundlehash",
+      "type": "string"
+    },
+    "coverage": {
+      "additionalProperties": true,
+      "title": "Coverage",
+      "type": "object"
+    }
+  },
+  "required": [
+    "requestHash",
+    "configurationHash",
+    "baseSha",
+    "targetSha",
+    "mergeBaseSha",
+    "effectiveBaseSha",
+    "diffHash",
+    "diffBase64",
+    "bundleJson",
+    "bundleHash",
+    "coverage"
+  ],
+  "title": "GitCaptureResult",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devproof.local/contracts/git-capture-result-v1"
+}

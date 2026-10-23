@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 64 64" fill="none">
+  <title>DevProof 括号小伙伴</title>
+  <path d="M20 9Q32 15 44 9L57 29L44 44L47 55Q32 51 17 55L20 44L7 29Z" fill="#FFF8EA"/>
+  <path d="M20 9L7 29L20 44L17 55H9M44 9L57 29L44 44L47 55H55" stroke="#285EB8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M23 22Q26 19 29 22M35 20Q38 16 41 20" stroke="#142B4F" stroke-width="1.8" stroke-linecap="round"/>
+  <ellipse cx="26" cy="31" rx="2.8" ry="4.4" fill="#142B4F"/>
+  <ellipse cx="38" cy="31" rx="2.8" ry="4.4" fill="#142B4F"/>
+  <ellipse cx="42" cy="39" rx="3.2" ry="2" transform="rotate(-20 42 39)" fill="#FFA66B"/>
+</svg>

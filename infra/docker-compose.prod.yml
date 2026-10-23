@@ -1,0 +1,113 @@
+name: ai-codereview
+
+x-backend-environment: &backend_environment
+  PYTHONFAULTHANDLER: "1"
+  DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-ai_codereview}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-ai_codereview}
+  ARTIFACT_ROOT: /artifacts
+  JWT_SECRET: ${JWT_SECRET:?set JWT_SECRET in infra/.env.prod}
+  CORS_ALLOWED_ORIGINS: '["https://offe-assistance.top", "https://www.offe-assistance.top"]'
+  GENERATION_PROVIDER: ${GENERATION_PROVIDER:-deepseek}
+  GENERATION_MODEL: ${GENERATION_MODEL:-deepseek-v4-flash}
+  GENERATION_BASE_URL: ${GENERATION_BASE_URL:-https://api.deepseek.com}
+  GENERATION_API_KEY: ${GENERATION_API_KEY:-}
+  EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-dashscope}
+  EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-v4}
+  EMBEDDING_BASE_URL: ${EMBEDDING_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}
+  EMBEDDING_API_KEY: ${EMBEDDING_API_KEY:-}
+  EMBEDDING_DIMENSIONS: ${EMBEDDING_DIMENSIONS:-768}
+  GITHUB_SOURCE_TOKEN: ${GITHUB_SOURCE_TOKEN:-}
+  MINERU_API_TOKEN: ${MINERU_API_TOKEN:-}
+  MINERU_MODEL_VERSION: ${MINERU_MODEL_VERSION:-pipeline}
+  MINERU_FORCE_OCR: ${MINERU_FORCE_OCR:-true}
+  AGENT_TOOL_ALLOWED_HOSTS: ${AGENT_TOOL_ALLOWED_HOSTS:-[]}
+
+x-logging: &default_logging
+  driver: local
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    mem_limit: 768m
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ai_codereview}
+      POSTGRES_USER: ${POSTGRES_USER:-ai_codereview}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in infra/.env.prod}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    logging: *default_logging
+
+  api:
+    image: ai-codereview-backend:latest
+    build:
+      context: ../backend
+    restart: unless-stopped
+    mem_limit: 768m
+    environment: *backend_environment
+    volumes:
+      - artifact-volume:/artifacts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://localhost:8000/api/v1/health/live')"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+    logging: *default_logging
+
+  worker:
+    image: ai-codereview-backend:latest
+    build:
+      context: ../backend
+    command: ["python", "-m", "app.worker.main"]
+    restart: unless-stopped
+    mem_limit: 1g
+    environment:
+      <<: *backend_environment
+      WORKER_ID: production-worker-1
+    volumes:
+      - artifact-volume:/artifacts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    logging: *default_logging
+
+  migrate:
+    image: ai-codereview-backend:latest
+    build:
+      context: ../backend
+    command: ["alembic", "upgrade", "head"]
+    profiles: ["migrate"]
+    environment: *backend_environment
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile.prod
+    restart: unless-stopped
+    mem_limit: 128m
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/ai-codereview/certs:/etc/nginx/certs:ro
+    depends_on:
+      api:
+        condition: service_healthy
+    logging: *default_logging
+
+volumes:
+  postgres-data:
+  artifact-volume:

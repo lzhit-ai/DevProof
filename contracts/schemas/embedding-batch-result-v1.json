@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "embedding-batch-result-v1",
+      "default": "embedding-batch-result-v1",
+      "title": "Schemaversion",
+      "type": "string"
+    },
+    "configurationHash": {
+      "title": "Configurationhash",
+      "type": "string"
+    },
+    "textHashes": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Texthashes",
+      "type": "array"
+    },
+    "vectors": {
+      "items": {
+        "items": {
+          "type": "number"
+        },
+        "type": "array"
+      },
+      "title": "Vectors",
+      "type": "array"
+    }
+  },
+  "required": [
+    "configurationHash",
+    "textHashes",
+    "vectors"
+  ],
+  "title": "EmbeddingBatchResult",
+  "type": "object"
+}

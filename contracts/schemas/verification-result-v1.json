@@ -1,0 +1,298 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "findings",
+    "challenges",
+    "links",
+    "customResults",
+    "coverage",
+    "nodeErrors"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "verification-result-v1"
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "findingKey",
+          "evidenceId",
+          "relatedClaimIds",
+          "findingKind",
+          "severity",
+          "title",
+          "problem",
+          "triggerScenario",
+          "recommendation",
+          "confidence"
+        ],
+        "properties": {
+          "findingKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "evidenceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "relatedClaimIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 20
+          },
+          "findingKind": {
+            "enum": [
+              "BUG",
+              "SECURITY",
+              "PERFORMANCE",
+              "RELIABILITY",
+              "MAINTAINABILITY",
+              "TEST_GAP"
+            ]
+          },
+          "severity": {
+            "enum": [
+              "CRITICAL",
+              "HIGH",
+              "MEDIUM",
+              "LOW"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 240
+          },
+          "problem": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "triggerScenario": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 3000
+          },
+          "recommendation": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "confidence": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        }
+      },
+      "maxItems": 100
+    },
+    "challenges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "findingKey",
+          "verdict",
+          "reason",
+          "evidenceIds"
+        ],
+        "properties": {
+          "findingKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "verdict": {
+            "enum": [
+              "SUPPORTED",
+              "UNSUPPORTED",
+              "NEEDS_HUMAN"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 4000
+          },
+          "evidenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uuid"
+            },
+            "maxItems": 20,
+            "minItems": 1
+          }
+        }
+      },
+      "maxItems": 100
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "claimId",
+          "evidenceId",
+          "relation",
+          "rationale"
+        ],
+        "properties": {
+          "claimId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "evidenceId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "relation": {
+            "enum": [
+              "SUPPORTS",
+              "CONTRADICTS",
+              "CONTEXT_ONLY"
+            ]
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      },
+      "maxItems": 200
+    },
+    "customResults": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "capabilityKey",
+          "links"
+        ],
+        "properties": {
+          "capabilityKey": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "claimId",
+                "evidenceId",
+                "relation",
+                "rationale"
+              ],
+              "properties": {
+                "claimId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "evidenceId": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "relation": {
+                  "enum": [
+                    "SUPPORTS",
+                    "CONTRADICTS",
+                    "CONTEXT_ONLY"
+                  ]
+                },
+                "rationale": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 1000
+                }
+              }
+            },
+            "maxItems": 100
+          }
+        }
+      },
+      "maxItems": 100
+    },
+    "coverage": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "scopeKind",
+          "scopeRef",
+          "state",
+          "reasonCode",
+          "details"
+        ],
+        "properties": {
+          "scopeKind": {
+            "enum": [
+              "CODE_REVIEW",
+              "FINDING_CHALLENGE",
+              "MODEL",
+              "AGENT",
+              "CONTEXT_SUPPLEMENT"
+            ]
+          },
+          "scopeRef": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 96
+          },
+          "state": {
+            "enum": [
+              "ANALYZED",
+              "PARTIAL",
+              "UNAVAILABLE",
+              "SKIPPED",
+              "NOT_APPLICABLE"
+            ]
+          },
+          "reasonCode": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "details": {
+            "type": "object"
+          }
+        }
+      },
+      "maxItems": 150
+    },
+    "nodeErrors": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 256
+      },
+      "maxItems": 200
+    }
+  }
+}

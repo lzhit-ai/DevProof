@@ -1,0 +1,489 @@
+{
+  "recordType": "actual-planning-acceptance",
+  "observedAt": "2026-10-22T10:45:16.122383+00:00",
+  "repository": {
+    "url": "https://github.com/pallets/flask.git",
+    "targetSha": "d086db856be187255b8ec61ef409357393020f32",
+    "snapshotContentHash": "sha256:5379465ce9c99905dd56846a6b45d9ab03ec140300c0b1cb24fb28da0ae52f65",
+    "capturedFiles": 142,
+    "capturedBytes": 630390
+  },
+  "input": {
+    "title": "Flaskr 博客文章列表分页",
+    "content": "目标仓库是 Pallets 官方 Flask 的 examples/tutorial/flaskr 博客示例，本次只规划该应用的列表分页功能。\n需求：当前首页一次读出全部文章，改为每页10篇，以 page 查询参数访问。page 缺省为1，非正整数或不能解析的输入返回400；首页无文章时第1页保持可用并显示现有空列表界面；有文章时超出实际页数返回404。按 created DESC、id DESC 稳定排序，同一发布时间的文章不得因排序歧义跨页重复或遗漏。查询使用参数化 LIMIT/OFFSET，并提供当前页、是否有上一页/下一页及相应链接。分页链接保留正确路由，首尾页不提供越界跳转。\n沿用现有SQLite数据库、Flask蓝图、Jinja模板和作者身份校验；本次不引入ORM、前端框架、缓存或新认证系统。创建、修改、删除文章后仍回到博客列表第1页，原登录与作者权限行为保持。查询和模板可在分页参数/响应上下文契约明确后分别推进，不将模板开发一律阻塞到整个后端事项完成。\n请先读取本任务冻结输入，再由已注册 repository-explorer 专门核对博客查询、索引模板、数据库定义及相关现有验证入口，主规划Agent结合实际返回整理可编辑计划。只引用本次真实读取的冻结SHA、路径和行号；如文件未进入快照或行为无法确认，应明确说明。请拆出可独立验收的工作项、稳定验收标识、可观察条件、实际所需证据、复用引用、契约产物及可用条件依赖和风险。\n这是本次用户授权的规划验收需求，不表示已向Pallets提交功能请求或已实现该功能。当前任务只生成待人工确认的草案，不运行测试、不执行仓库代码、不修改仓库、不创建外部Issue或PR，不确认计划或批准交付。",
+    "revisionNo": 1
+  },
+  "observedReads": [
+    {
+      "method": "GET",
+      "path": "/api/v1/agent-tasks/7a254120-fe15-4e1a-8562-5dcc17b82b48",
+      "httpStatus": 200,
+      "responseProjection": {
+        "id": "7a254120-fe15-4e1a-8562-5dcc17b82b48",
+        "task_kind": "PLAN_DRAFT",
+        "status": "SUCCEEDED",
+        "attempt_no": 1,
+        "accepted_hash": "sha256:3bc395c7a58f493b30db306f828ad3824620562423c6da18cdb1dcc765f7b348"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/projects/47ed8a1a-dbbe-45f8-ada7-e0318e8bb87e/ideas/8127fbb9-e9b4-4ddc-b8f2-3b79535e317a",
+      "httpStatus": 200,
+      "responseProjection": {
+        "planningRunStatus": "SUCCEEDED",
+        "planId": "644533df-6855-4eee-a8d2-42bdc88b9cef",
+        "planStatus": "DRAFT",
+        "planContentHash": "sha256:3bc395c7a58f493b30db306f828ad3824620562423c6da18cdb1dcc765f7b348"
+      }
+    }
+  ],
+  "acceptedCandidate": {
+    "dependencies": [
+      {
+        "condition": "接口已确认且实现已向模板传入 posts、page、per_page、total_pages、has_prev、prev_url、has_next、next_url；模板可基于冻结键名开发，端到端验收需 PAG-01 视图可返回 200/400/404。",
+        "consumer": "PAG-02",
+        "deliverable": "PAG-CTX-v1",
+        "provider": "PAG-01",
+        "reason": "模板不自行计算页码或拼接链接，必须消费后端冻结的上下文键与链接值。"
+      },
+      {
+        "condition": "分页查询与越界判定在实现中可用（可被测试客户端通过 / 路由触发）。",
+        "consumer": "PAG-03",
+        "deliverable": "PAG-SQL-v1",
+        "provider": "PAG-01",
+        "reason": "不重不漏、400/404 与 Location 断言的可观察条件都基于后端实际分页结果。"
+      },
+      {
+        "condition": "首页渲染结果中出现形如 /?page=n 的上一页/下一页锚点，且首尾页不渲染越界链接。",
+        "consumer": "PAG-03",
+        "deliverable": "PAG-UI-v1",
+        "provider": "PAG-02",
+        "reason": "分页链接存在性与越界缺失的断言必须读取模板实际输出。"
+      }
+    ],
+    "issues": [
+      {
+        "acceptanceCriteria": [
+          {
+            "condition": "GET / 未带 page 时按第 1 页返回，最多 10 篇文章，其余行为与原先一致（含登录相关导航与作者编辑链接）。",
+            "key": "PAG-01-AC1",
+            "requiredEvidence": [
+              "测试用例与断言片段所在文件路径及行号",
+              "断言 GET / 与 GET /?page=1 返回内容等价、文章数量不超过 10 的测试输出"
+            ],
+            "verificationMethod": "针对 examples/tutorial/tests 目录的 pytest 测试用例断言（由后续实现者补充到 test_blog.py）并人工审阅响应内容。"
+          },
+          {
+            "condition": "page 为缺省、非正整数（0、-1、-7）、不能解析的字符串（如 abc、1.5、空串）时：缺省取 1；非正整数或不可解析返回 HTTP 400，且不执行取数查询。",
+            "key": "PAG-01-AC2",
+            "requiredEvidence": [
+              "参数化输入列表与对应期望状态码的测试代码路径行号",
+              "pytest 运行结果中这些用例的通过记录（后续实现阶段）"
+            ],
+            "verificationMethod": "参数化 pytest 用例逐一请求并断言状态码；确认没有任何路径触发 500。"
+          },
+          {
+            "condition": "数据库无任何文章时 GET / 与 GET /?page=1 返回 200，并保留现有空列表界面（不显示任何 article，页面骨架与导航仍在）；无文章而请求 page>=2 返回 404。",
+            "key": "PAG-01-AC3",
+            "requiredEvidence": [
+              "空库 fixture 构造方式与其文件行号",
+              "空库下第 1 页与第 2 页状态码断言及响应片段"
+            ],
+            "verificationMethod": "使用空数据库 fixture 的 pytest 用例断言状态码与响应中不含 article 内容；页面骨架断言可检测 Posts 标题存在。"
+          },
+          {
+            "condition": "存在文章且请求页码超过实际页数时返回 404；未超过时返回 200。实际页数 = ceil(文章总数 / 10)，页数计算与取数使用同一连接与同一快照。",
+            "key": "PAG-01-AC4",
+            "requiredEvidence": [
+              "边界数据构造代码位置",
+              "各边界页码的状态码断言结果"
+            ],
+            "verificationMethod": "分别构造 0、1、10、11 篇文章断言边界页（如 11 篇时第 1 页 200、第 2 页 200、第 3 页 404）。"
+          },
+          {
+            "condition": "排序为 ORDER BY created DESC, id DESC；分页取数使用参数化 LIMIT ? OFFSET ?，不存在字符串拼接注入面；同一 created 值的多篇文章跨页遍历时不重复、不遗漏（并集等于全集且无交集）。",
+            "key": "PAG-01-AC5",
+            "requiredEvidence": [
+              "分页 SQL 语句在 blog.py 中的行号范围",
+              "同 created 多文章的逐页 id 集合断言代码与结果"
+            ],
+            "verificationMethod": "构造多条 created 完全相同的文章，逐页抓取 id 集合并做集合断言；审阅查询语句确认参数化绑定。"
+          },
+          {
+            "condition": "视图向 blog/index.html 传出的上下文契约已冻结并可被模板独立开发：posts、page、per_page=10、total_pages、has_prev、prev_url、has_next、next_url；首/尾页对应 has_prev/has_next 为 False 且对应 url 为 None；链接由 url_for('blog.index', page=...) 生成并保留同一路由。",
+            "key": "PAG-01-AC6",
+            "requiredEvidence": [
+              "契约键名与取值规则清单（与实现代码一致的行号）",
+              "渲染结果中上一页/下一页链接的准确 href 断言"
+            ],
+            "verificationMethod": "对照冻结契约逐键断言响应上下文（模板渲染前）或通过渲染结果的链接断言验证；链接断言确认 href 指向 / 路由且带正确 page 参数。"
+          }
+        ],
+        "assumptions": [
+          "每页大小固定为 10，不通过配置或查询参数开放修改。",
+          "page 只接受十进制非负整数文本；0、负数、小数、空白串、空串一律视为不可解析并返回 400；'+1'、'01' 的取舍留待实现时统一，草案倾向严格数字形式（01 视为 1 或 400 需人工确认）。",
+          "空库时 page>=2 视为超出实际页数并返回 404；仅第 1 页保持可用。",
+          "400/404 使用 Flask/Werkzeug 默认错误页，本示例不新增 errors 模板。"
+        ],
+        "deliverables": [
+          {
+            "availabilityCondition": "接口已确认（键名与取值规则冻结并写入实现），无需等待模板完成即可供 PAG-02 依赖。",
+            "description": "index 视图分页上下文契约：posts、page、per_page(=10)、total_pages、has_prev、prev_url、has_next、next_url，含链接由 url_for('blog.index', page=n) 生成、首尾页 url 为 None 的规则。",
+            "key": "PAG-CTX-v1",
+            "kind": "API",
+            "version": "1"
+          },
+          {
+            "availabilityCondition": "实现完成并在实现者本地 pytest 用例中可调用（本任务不运行验证）。",
+            "description": "参数化分页 SQL：COUNT(*) 统计 + ORDER BY created DESC, id DESC LIMIT ? OFFSET ? 取数，及页码越界判定规则（total_pages 推导）。",
+            "key": "PAG-SQL-v1",
+            "kind": "OTHER",
+            "version": "1"
+          }
+        ],
+        "goal": "把 flaskr 首页视图从一次读出全部文章改为按每页 10 篇、以 page 查询参数访问的稳定分页查询，并定义模板可消费的分页上下文契约。",
+        "key": "PAG-01",
+        "reuseRefs": [
+          {
+            "endLine": 26,
+            "path": "examples/tutorial/flaskr/blog.py",
+            "reason": "现有 index 视图实现：单条无分页查询、ORDER BY created DESC、render_template 传 posts，是本次改造的唯一切入点。",
+            "startLine": 17,
+            "targetSha": "d086db856be187255b8ec61ef409357393020f32"
+          },
+          {
+            "endLine": 20,
+            "path": "examples/tutorial/flaskr/db.py",
+            "reason": "get_db 提供每请求复用连接与 sqlite3.Row 行工厂，分页查询必须复用该入口，不得新建连接。",
+            "startLine": 9,
+            "targetSha": "d086db856be187255b8ec61ef409357393020f32"
+          },
+          {
+            "endLine": 20,
+            "path": "examples/tutorial/flaskr/schema.sql",
+            "reason": "post 表定义：id 主键、created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP，支撑 created DESC, id DESC 稳定排序与计数查询；本次不新增索引。",
+            "startLine": 13,
+            "targetSha": "d086db856be187255b8ec61ef409357393020f32"
+          },
+          {
+            "endLine": 45,
+            "path": "examples/tutorial/flaskr/__init__.py",
+            "reason": "/ 与 endpoint index 的别名关系，分页链接必须用 blog.index 生成，避免破坏 url_for('index') 兼容。",
+            "startLine": 45,
+            "targetSha": "d086db856be187255b8ec61ef409357393020f32"
+          },
+          {
+            "endLine": 15,
+            "path": "examples/tutorial/tests/test_blog.py",
+            "reason": "现有 test_index 覆盖首页返回内容与编辑链接，是分页改造后必须保持通过的既有断言基线。",
+            "startLine": 6,
+            "targetSha": "d086db856be187255b8ec61ef409357393020f32"
+          }
+        ],
+        "scope": "仅修改 examples/tutorial/flaskr/blog.py 的 index 视图（必要时增加模块内私有辅助函数）；使用参数化 SQL 实现 COUNT 统计与 LIMIT/OFFSET 取数；实现 page 缺省与非法输入 400、有文章时超出实际页数 404、created DESC + id DESC 稳定排序、首尾页不产生越界链接；冻结传给 blog/index.html 的上下文键与链接生成方式。不修改 schema，不引入 ORM，不改路由路径与方法。",
+        "title": "博客列表分页查询、page 参数校验与分页上下文契约"
+      },
+      {
+        "acceptanceCriteria": [
+          {
+            "condition": "模板只从冻结上下文中读取 posts、page、has_prev、prev_url、has_next、next_url，不自行计算除法、不拼接 URL、不修改路由名。",
+            "key": "PAG-02-AC1",
+            "requiredEvidence": [
+              "index.html 分页区块行号范围及其引用的上下文键清单"
+            ],
+            "verificationMethod": "审阅 index.html diff 与 PAG-CTX-v1 契约逐键对照。"
+          },
+          {
+            "condition": "第 1 页只显示“下一页”链接（若存在下一页），最后一页只显示“上一页”链接；首/尾页不渲染任何越界链接，链接 href 为带正确 page 值的 / 路径。",
+            "key": "PAG-02-AC2",
+            "requiredEvidence": [
+              "渲染响应中上一页/下一页锚点的精确断言（含 href 值）",
+              "第 1 页无上一页链接、最后一页无下一页链接的断言"
+            ],
+            "verificationMethod": "对 11 篇文章场景分别请求第 1、2 页，用字符串断言 href 存在性与缺省性。"
+          },
+          {
+            "condition": "无文章时页面仍返回 200 并呈现既有空列表界面（不出现 article 卡片，分页导航不显示任何可用越界链接），页面标题与 New 按钮存在性等原有行为不受影响。",
+            "key": "PAG-02-AC3",
+            "requiredEvidence": [
+              "空库渲染响应的负向断言代码与结果"
+            ],
+            "verificationMethod": "空库 pytest 用例断言响应中无 article 关键片段且无分页锚点。"
+          },
+          {
+            "condition": "文章卡片渲染字段（title、username、created 日期、body）、编辑链接仅作者可见（g.user['id'] == post['author_id']）、article 之间 hr 分隔保持原状，无回归。",
+            "key": "PAG-02-AC4",
+            "requiredEvidence": [
+              "现有 test_index 与 test_author_required 用例行号及其通过记录"
+            ],
+            "verificationMethod": "复用现有 test_index 与 test_author_required 断言在分页改造后仍通过。"
+          }
+        ],
+        "assumptions": [
+          "分页导航以最小 HTML（nav + a）实现，样式沿用现有 style.css，必要时只加极少样式钩子。",
+          "上一页/下一页使用相对路由 href（如 /?page=2），可在断言中直接匹配。"
+        ],
+        "deliverables": [
+          {
+            "availabilityCondition": "服务可调用条件满足后才可端到端验证：PAG-01 的视图已提供冻结上下文键且首页可返回 200；仅契约冻结时模板可先行开发但无法完成端到端证据。",
+            "description": "blog/index.html 中的分页导航片段：依据 has_prev/prev_url 与 has_next/next_url 条件渲染上一页/下一页锚点，空列表时不渲染越界链接。",
+            "key": "PAG-UI-v1",
+            "kind": "COMPONENT",
+            "version": "1"
+          }
+        ],
+        "goal": "在冻结的分页上下文契约之上，为首页模板增加上一页/下一页导航，并保持现有文章卡片渲染、空列表界面与作者编辑链接行为不变。",
+        "key": "PAG-02",
+        "reuseRefs": [
+          {
+            "endLine": 27,
+            "path": "examples/tutorial/flaskr/templates/blog/index.html",
+            "reason": "content 区块现有 for post in posts 循环、文章卡片、作者编辑链接与 hr 分隔逻辑，分页导航须追加而不破坏这些结构。",
+            "startLine": 11,
+            "targetSha": "d086db856be187255b8ec61ef409357393020f32"
+          },
+          {
+            "endLine": 5,
+            "path": "examples/tutorial/flaskr/templates/base.html",
+            "reason": "顶部品牌链接使用 url_for('index') 指向 /，分页区块沿用 blog.index 路由可与之共存，不需改动 base.html。",
+            "startLine": 5,
+            "targetSha": "d086db856be187255b8ec61ef409357393020f32"
+          },
+          {
+            "endLine": 26,
+            "path": "examples/tutorial/flaskr/blog.py",
+            "reason": "render_template(\"blog/index.html\", posts=posts) 是上下文注入点，模板改造需与该调用对齐。",
+            "startLine": 26,
+            "targetSha": "d086db856be187255b8ec61ef409357393020f32"
+          }
+        ],
+        "scope": "仅修改 examples/tutorial/flaskr/templates/blog/index.html 的 content 区块导航部分（必要时在文章列表之后新增 nav 元素与最小样式钩子）；消费 PAG-CTX-v1 上下文；不新增模板文件，不改 base.html 导航结构，不改 CSS 之外的架构，不引入前端框架或 JavaScript。",
+        "title": "首页模板分页导航与空列表界面保持"
+      },
+      {
+        "acceptanceCriteria": [
+          {
+            "condition": "构造多页且包含相同 created 值的文章集合，逐页抓取 id 并断言：各页数量不超过 10、并集等于全集、交集为空、遍历顺序与 created DESC, id DESC 一致。",
+            "key": "PAG-03-AC1",
+            "requiredEvidence": [
+              "多页与同 created 数据构造代码路径行号",
+              "逐页 id 集合断言的测试结果"
+            ],
+            "verificationMethod": "pytest 用例在应用上下文中插入数据并按页请求解析 id。"
+          },
+          {
+            "condition": "create/update/delete 成功后重定向 Location 为不带 page 参数的 /，即列表第 1 页；原重定向行为不被分页改变。",
+            "key": "PAG-03-AC2",
+            "requiredEvidence": [
+              "重定向断言涉及的文件与行号",
+              "pytest 输出中这些用例的通过记录"
+            ],
+            "verificationMethod": "扩展现有 test_create/test_delete 并新增 update 场景，断言 Location == \"/\"。"
+          },
+          {
+            "condition": "分页改造后原登录与作者权限行为不变：未登录访问 /create、/<id>/update、/<id>/delete 仍 302 到 /auth/login；非作者 POST update/delete 仍 403；不存在文章仍 404；首页对非作者不显示编辑链接。",
+            "key": "PAG-03-AC3",
+            "requiredEvidence": [
+              "test_login_required、test_author_required、test_exists_required 的行号",
+              "这些用例在同一次 pytest 运行中的通过记录"
+            ],
+            "verificationMethod": "复用现有参数化用例在同一提交上运行并记录结果。"
+          },
+          {
+            "condition": "分页与越界用例在 examples/tutorial 的既有 pytest 配置（testpaths=tests）下可被自动发现并按项目配置执行，不需要新依赖。",
+            "key": "PAG-03-AC4",
+            "requiredEvidence": [
+              "pyproject.toml 中 pytest 配置行号",
+              "examples/tutorial 目录 pytest 收集到的用例清单"
+            ],
+            "verificationMethod": "审阅 pyproject.toml 配置与新增测试的文件放置位置，运行该目录 pytest。"
+          }
+        ],
+        "assumptions": [
+          "新增用例仅使用 pytest 与 Flask 测试客户端，不引入新依赖。",
+          "测试中通过 app_context 直接执行 INSERT 来构造分页数据，沿用 tests/conftest.py 的 app 与 client fixture。",
+          "分页导航锚点使用可稳定匹配的 href 形式（如 /?page=2），若模板选择不同形式，PAG-02 需同步更新断言。"
+        ],
+        "deliverables": [
+          {
+            "availabilityCondition": "需 PAG-01 的视图分页行为与 PAG-02 的导航标记均已就绪方可产出完整证据；单后端断言部分可在 PAG-01 就绪后先行编写。",
+            "description": "分页与回归测试资产：多页/同 created 数据构造、逐页不重不漏断言、400/404 边界用例、写操作回 / 的 Location 断言，以及既有登录/作者权限用例的复用运行。",
+            "key": "PAG-TEST-v1",
+            "kind": "OTHER",
+            "version": "1"
+          }
+        ],
+        "goal": "补齐能证明“稳定排序不重不漏、越界判定正确、写操作后回第 1 页、登录与作者权限不变”的可执行验证资产，覆盖后端与模板协同后的跨事项场景。",
+        "key": "PAG-03",
+        "reuseRefs": [
+          {
+            "endLine": 30,
+            "path": "examples/tutorial/tests/conftest.py",
+            "reason": "app fixture 每测试创建临时 SQLite 并 init_db + 载入 data.sql，是构造多页数据与空库场景的既有入口。",
+            "startLine": 14,
+            "targetSha": "d086db856be187255b8ec61ef409357393020f32"
+          },
+          {
+            "endLine": 9,
+            "path": "examples/tutorial/tests/data.sql",
+            "reason": "默认仅 1 篇文章且 created 固定 2018-01-01，多页与并列时间数据须在用例内追加插入，避免影响既有断言。",
+            "startLine": 6,
+            "targetSha": "d086db856be187255b8ec61ef409357393020f32"
+          },
+          {
+            "endLine": 84,
+            "path": "examples/tutorial/tests/test_blog.py",
+            "reason": "现有 create/update/delete 用例及其重定向、作者权限、存在性断言，是回归验证的扩展基线。",
+            "startLine": 39,
+            "targetSha": "d086db856be187255b8ec61ef409357393020f32"
+          },
+          {
+            "endLine": 32,
+            "path": "examples/tutorial/pyproject.toml",
+            "reason": "pytest testpaths=[\"tests\"] 与 filterwarnings=error 配置，约束新增测试需零告警并置于 tests 目录。",
+            "startLine": 30,
+            "targetSha": "d086db856be187255b8ec61ef409357393020f32"
+          },
+          {
+            "endLine": 73,
+            "path": "examples/tutorial/flaskr/blog.py",
+            "reason": "create 成功后的 redirect(url_for(\"blog.index\"))，是“回到第 1 页”断言的依据之一（update/delete 同类跳转在 104-105、124-125 行）。",
+            "startLine": 72,
+            "targetSha": "d086db856be187255b8ec61ef409357393020f32"
+          }
+        ],
+        "scope": "在 examples/tutorial/tests/ 下扩展测试数据构造（多篇文章、含相同 created 的并列文章，按需在用例内插入而不改动既有 data.sql 单篇默认数据）与 test_blog.py 用例；断言 create/update/delete 后 Location 指向 /（第 1 页）且未附带 page 参数；复跑既有 test_index、test_author_required、test_login_required、test_exists_required。不改产品代码逻辑（除为可测性而暴露的既有函数签名外）。",
+        "title": "分页数据一致性、跳转回第 1 页与既有行为回归验证"
+      }
+    ],
+    "kind": "PLAN",
+    "questions": [],
+    "risks": [
+      "examples/tutorial/pyproject.toml 第30-32行与 tests/conftest.py 显示测试在独立临时库运行；本任务未运行任何测试，实际是否通过需在实现阶段验证，草案不声称已测试。",
+      "schema.sql 第13-20行未对 created 建索引，分页 COUNT 与 LIMIT/OFFSET 在大数据量下可能变慢；示例数据规模小，本次明确不新增索引，性能未评估。",
+      "created 为 TIMESTAMP DEFAULT CURRENT_TIMESTAMP（秒级），若无 id DESC 次序键会出现跨页重复或遗漏；已通过 PAG-01-AC5 约束，但实现时必须同时改 SQL 与测试，仅改 LIMIT 不足以证明稳定性。",
+      "page 解析细节（如 '01'、'+1'、前后空白的宽松处理）在需求中未明说，草案按严格数字口径假设，需人工确认以免测试口径与实现不一致。",
+      "无文章时 page>=2 的 404 语义为从“有文章时超出实际页数返回404”推导的假设，需求未直接表述，可能与期望不符。",
+      "delegate repository-explorer 的子任务返回协议校验失败，未取得其独立核对结果；本计划的复用引用均来自主 Agent 对冻结快照的实际读取，如需要独立复核应另行安排。",
+      "分页模板未提示 total_pages 的展示需求，若后续要求“第 X/Y 页”文案或跳转页码列表，需要在 PAG-CTX-v1 上追加契约项并重新验收。"
+    ],
+    "summary": "基于冻结快照 d086db856be187255b8ec61ef409357393020f32 的实际读取结果，本人已核对 examples/tutorial/flaskr 的博客列表查询（flaskr/blog.py 第17-26行：只有一个无参数查询，按 created DESC 排序且未分页）、首页模板（templates/blog/index.html 第11-27行：直接循环 posts，没有分页导航）、post 表定义（schema.sql 第13-20行：created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP，没有 created 相关索引）、数据库连接（db.py 第9-20行：sqlite3.Row，使用 g 缓存连接），以及测试入口（examples/tutorial/pyproject.toml 第30-32行 testpaths=tests；tests/conftest.py 第14-30行逐测试临时库；tests/data.sql 仅 1 篇文章；tests/test_blog.py 第6-15行 test_index）。据此拆出 3 个可独立验收工作项：后端分页查询与参数校验（含上下文契约）、首页模板分页导航（可在契约冻结后并行推进）、分页数据一致性与既有行为回归验证。用户需求本身信息充分，无需再澄清；但下列判定在草案中作为显式假设列出，待人工确认。本任务只产出待确认草案，未实现、未测试、未修改仓库。"
+  },
+  "executionHistory": [
+    {
+      "taskId": "0815750f-a4f9-4f50-b0c2-9265aa843182",
+      "status": "FAILED",
+      "lastErrorCode": "BUDGET_EXHAUSTED",
+      "modelTurns": 12,
+      "modelUsage": {
+        "prompt_tokens": 104321,
+        "completion_tokens": 3613,
+        "total_tokens": 107934
+      },
+      "delegations": 1,
+      "completedAgents": []
+    },
+    {
+      "taskId": "45edd25c-5ae2-4cc4-94c5-70e465135c6f",
+      "status": "FAILED",
+      "lastErrorCode": "PLANNING_RESULT_INVALID",
+      "modelTurns": 12,
+      "modelUsage": {
+        "prompt_tokens": 119012,
+        "completion_tokens": 21064,
+        "total_tokens": 140076
+      },
+      "delegations": 1,
+      "completedAgents": [
+        "repository-explorer",
+        "planning-agent"
+      ]
+    },
+    {
+      "taskId": "7a254120-fe15-4e1a-8562-5dcc17b82b48",
+      "status": "SUCCEEDED",
+      "lastErrorCode": null,
+      "modelTurns": 12,
+      "modelUsage": {
+        "prompt_tokens": 111816,
+        "completion_tokens": 17480,
+        "total_tokens": 129296
+      },
+      "delegations": 1,
+      "completedAgents": [
+        "planning-agent"
+      ]
+    }
+  ],
+  "delegationEvents": [
+    {
+      "agentInstanceId": "f5709115-0a66-4258-9c29-a7f2392def4e",
+      "attemptId": "4f3e4ea6-bd29-4cc0-9a7c-16a11ba205b7",
+      "contractVersion": "agent-task-v1",
+      "correlationId": "3a2c64ff-e42d-40db-bb6f-ae67dc61d394",
+      "eventSeq": 33,
+      "eventType": "AGENT_DELEGATED",
+      "fencingToken": 1,
+      "occurredAt": "2026-10-22T10:44:09.800696+00:00",
+      "parentAgentInstanceId": null,
+      "payloadRedacted": {
+        "agentKey": "repository-explorer",
+        "childInstanceId": "9a53a916-efad-4cc2-8d4b-3064489efe83"
+      },
+      "taskId": "7a254120-fe15-4e1a-8562-5dcc17b82b48",
+      "toolCallId": null,
+      "workerId": "agent-worker-local"
+    }
+  ],
+  "toolErrorEvents": [
+    {
+      "agentInstanceId": "f5709115-0a66-4258-9c29-a7f2392def4e",
+      "attemptId": "4f3e4ea6-bd29-4cc0-9a7c-16a11ba205b7",
+      "contractVersion": "agent-task-v1",
+      "correlationId": "3a2c64ff-e42d-40db-bb6f-ae67dc61d394",
+      "eventSeq": 28,
+      "eventType": "TOOL_COMPLETED",
+      "fencingToken": 1,
+      "occurredAt": "2026-10-22T10:44:06.404542+00:00",
+      "parentAgentInstanceId": null,
+      "payloadRedacted": {
+        "agentKey": "planning-agent",
+        "callId": "call_04_Wcf3YlrvOaINFZCp0vSL1198",
+        "errorCode": "TOOL_INPUT_INVALID",
+        "name": "read_file",
+        "ok": false
+      },
+      "taskId": "7a254120-fe15-4e1a-8562-5dcc17b82b48",
+      "toolCallId": null,
+      "workerId": "agent-worker-local"
+    },
+    {
+      "agentInstanceId": "f5709115-0a66-4258-9c29-a7f2392def4e",
+      "attemptId": "4f3e4ea6-bd29-4cc0-9a7c-16a11ba205b7",
+      "contractVersion": "agent-task-v1",
+      "correlationId": "3a2c64ff-e42d-40db-bb6f-ae67dc61d394",
+      "eventSeq": 73,
+      "eventType": "TOOL_COMPLETED",
+      "fencingToken": 1,
+      "occurredAt": "2026-10-22T10:44:47.255057+00:00",
+      "parentAgentInstanceId": null,
+      "payloadRedacted": {
+        "agentKey": "planning-agent",
+        "callId": "call_01_z08cjNjMTrnmUMrUAhxT0174",
+        "errorCode": "MODEL_SCHEMA_INVALID",
+        "name": "delegate_agent",
+        "ok": false
+      },
+      "taskId": "7a254120-fe15-4e1a-8562-5dcc17b82b48",
+      "toolCallId": null,
+      "workerId": "agent-worker-local"
+    }
+  ],
+  "scope": [
+    "Actual public repository snapshot, model calls, registered delegation and Java draft acceptance.",
+    "The plan is a draft requiring human confirmation.",
+    "No upstream repository code was executed or modified.",
+    "Cancellation, delivery verification, approval/publishing, cache recovery and historical compatibility remain outside this record."
+  ]
+}

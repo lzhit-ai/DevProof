@@ -1,0 +1,94 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "configurationHash": {
+      "pattern": "^sha256:[a-f0-9]{64}$",
+      "title": "Configurationhash",
+      "type": "string"
+    },
+    "baseRef": {
+      "maxLength": 255,
+      "minLength": 1,
+      "title": "Baseref",
+      "type": "string"
+    },
+    "targetRef": {
+      "maxLength": 255,
+      "minLength": 1,
+      "title": "Targetref",
+      "type": "string"
+    },
+    "diffMode": {
+      "enum": [
+        "TWO_DOT",
+        "THREE_DOT"
+      ],
+      "title": "Diffmode",
+      "type": "string"
+    },
+    "includePaths": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 100,
+      "title": "Includepaths",
+      "type": "array"
+    },
+    "excludePaths": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 100,
+      "title": "Excludepaths",
+      "type": "array"
+    },
+    "schemaVersion": {
+      "const": "git-capture-request-v1",
+      "title": "Schemaversion",
+      "type": "string"
+    },
+    "projectId": {
+      "format": "uuid",
+      "title": "Projectid",
+      "type": "string"
+    },
+    "repositoryId": {
+      "format": "uuid",
+      "title": "Repositoryid",
+      "type": "string"
+    },
+    "repositoryUrl": {
+      "maxLength": 2000,
+      "minLength": 8,
+      "title": "Repositoryurl",
+      "type": "string"
+    },
+    "credentialRef": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Z][A-Z0-9_]{2,159}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Credentialref"
+    }
+  },
+  "required": [
+    "configurationHash",
+    "baseRef",
+    "targetRef",
+    "diffMode",
+    "schemaVersion",
+    "projectId",
+    "repositoryId",
+    "repositoryUrl"
+  ],
+  "title": "GitCaptureRequest",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://devproof.local/contracts/git-capture-request-v1"
+}

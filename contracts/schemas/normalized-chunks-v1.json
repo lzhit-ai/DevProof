@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "ChunkComputation": {
+      "additionalProperties": false,
+      "properties": {
+        "chunkIndex": {
+          "minimum": 0,
+          "title": "Chunkindex",
+          "type": "integer"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "textHash": {
+          "title": "Texthash",
+          "type": "string"
+        },
+        "locator": {
+          "additionalProperties": true,
+          "title": "Locator",
+          "type": "object"
+        },
+        "embedding": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Embedding"
+        }
+      },
+      "required": [
+        "chunkIndex",
+        "content",
+        "textHash",
+        "locator",
+        "embedding"
+      ],
+      "title": "ChunkComputation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "normalized-chunks-v1",
+      "default": "normalized-chunks-v1",
+      "title": "Schemaversion",
+      "type": "string"
+    },
+    "configurationHash": {
+      "title": "Configurationhash",
+      "type": "string"
+    },
+    "normalizedTextHash": {
+      "title": "Normalizedtexthash",
+      "type": "string"
+    },
+    "chunks": {
+      "items": {
+        "$ref": "#/$defs/ChunkComputation"
+      },
+      "minItems": 1,
+      "title": "Chunks",
+      "type": "array"
+    }
+  },
+  "required": [
+    "configurationHash",
+    "normalizedTextHash",
+    "chunks"
+  ],
+  "title": "NormalizedChunks",
+  "type": "object"
+}

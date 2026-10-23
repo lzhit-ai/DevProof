@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "ComputeConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "schemaVersion": {
+          "const": "compute-configuration-v1",
+          "default": "compute-configuration-v1",
+          "title": "Schemaversion",
+          "type": "string"
+        },
+        "parser": {
+          "$ref": "#/$defs/ParserConfiguration"
+        },
+        "embedding": {
+          "$ref": "#/$defs/EmbeddingConfiguration"
+        },
+        "sourceMaxBytes": {
+          "title": "Sourcemaxbytes",
+          "type": "integer"
+        },
+        "resultMaxBytes": {
+          "title": "Resultmaxbytes",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "title": "Timeoutseconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "parser",
+        "embedding",
+        "sourceMaxBytes",
+        "resultMaxBytes",
+        "timeoutSeconds"
+      ],
+      "title": "ComputeConfiguration",
+      "type": "object"
+    },
+    "EmbeddingConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        },
+        "model": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "baseUrl": {
+          "minLength": 1,
+          "title": "Baseurl",
+          "type": "string"
+        },
+        "dimensions": {
+          "maximum": 8192,
+          "minimum": 1,
+          "title": "Dimensions",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "provider",
+        "model",
+        "baseUrl",
+        "dimensions"
+      ],
+      "title": "EmbeddingConfiguration",
+      "type": "object"
+    },
+    "ParserConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "parserVersion": {
+          "title": "Parserversion",
+          "type": "string"
+        },
+        "mineruBaseUrl": {
+          "title": "Minerubaseurl",
+          "type": "string"
+        },
+        "mineruModelVersion": {
+          "title": "Minerumodelversion",
+          "type": "string"
+        },
+        "mineruLanguage": {
+          "title": "Minerulanguage",
+          "type": "string"
+        },
+        "mineruTimeoutSeconds": {
+          "title": "Minerutimeoutseconds",
+          "type": "integer"
+        },
+        "mineruPollIntervalSeconds": {
+          "title": "Minerupollintervalseconds",
+          "type": "integer"
+        },
+        "mineruResultMaxBytes": {
+          "title": "Mineruresultmaxbytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "parserVersion",
+        "mineruBaseUrl",
+        "mineruModelVersion",
+        "mineruLanguage",
+        "mineruTimeoutSeconds",
+        "mineruPollIntervalSeconds",
+        "mineruResultMaxBytes"
+      ],
+      "title": "ParserConfiguration",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "configuration": {
+      "$ref": "#/$defs/ComputeConfiguration"
+    },
+    "configurationHash": {
+      "title": "Configurationhash",
+      "type": "string"
+    },
+    "embeddingCredentialConfigured": {
+      "title": "Embeddingcredentialconfigured",
+      "type": "boolean"
+    },
+    "mineruCredentialConfigured": {
+      "title": "Minerucredentialconfigured",
+      "type": "boolean"
+    },
+    "supportedExtensions": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Supportedextensions",
+      "type": "array"
+    }
+  },
+  "required": [
+    "configuration",
+    "configurationHash",
+    "embeddingCredentialConfigured",
+    "mineruCredentialConfigured",
+    "supportedExtensions"
+  ],
+  "title": "ConfigurationResponse",
+  "type": "object"
+}

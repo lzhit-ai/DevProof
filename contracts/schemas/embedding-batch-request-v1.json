@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "embedding-batch-request-v1",
+      "default": "embedding-batch-request-v1",
+      "title": "Schemaversion",
+      "type": "string"
+    },
+    "configurationHash": {
+      "title": "Configurationhash",
+      "type": "string"
+    },
+    "texts": {
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Texts",
+      "type": "array"
+    }
+  },
+  "required": [
+    "configurationHash",
+    "texts"
+  ],
+  "title": "EmbeddingBatchRequest",
+  "type": "object"
+}

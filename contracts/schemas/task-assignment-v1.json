@@ -1,0 +1,649 @@
+{
+  "$defs": {
+    "AgentManifest": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "contentHash": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Contenthash",
+          "type": "string"
+        },
+        "agents": {
+          "items": {
+            "$ref": "#/$defs/RegisteredVersion"
+          },
+          "minItems": 1,
+          "title": "Agents",
+          "type": "array"
+        },
+        "tools": {
+          "items": {
+            "$ref": "#/$defs/RegisteredVersion"
+          },
+          "title": "Tools",
+          "type": "array"
+        },
+        "promptVersions": {
+          "items": {
+            "$ref": "#/$defs/RegisteredVersion"
+          },
+          "title": "Promptversions",
+          "type": "array"
+        },
+        "modelConfigRef": {
+          "minLength": 1,
+          "title": "Modelconfigref",
+          "type": "string"
+        },
+        "modelConfiguration": {
+          "$ref": "#/$defs/FrozenModelConfiguration"
+        },
+        "promptDefinitions": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Promptdefinitions",
+          "type": "object"
+        },
+        "businessConfigurationRef": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FrozenConfigurationRef"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "executionConfiguration": {
+          "additionalProperties": {
+            "$ref": "#/$defs/JsonValue"
+          },
+          "title": "Executionconfiguration",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "contentHash",
+        "agents",
+        "tools",
+        "promptVersions",
+        "modelConfigRef",
+        "modelConfiguration",
+        "promptDefinitions"
+      ],
+      "title": "AgentManifest",
+      "type": "object"
+    },
+    "ClaimProposalRunRef": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "CLAIM_PROPOSAL_RUN",
+          "title": "Kind",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "title": "ClaimProposalRunRef",
+      "type": "object"
+    },
+    "EvidenceQuestionRunRef": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "EVIDENCE_QUESTION_RUN",
+          "title": "Kind",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "title": "EvidenceQuestionRunRef",
+      "type": "object"
+    },
+    "ExecutionBudget": {
+      "additionalProperties": false,
+      "properties": {
+        "timeoutSeconds": {
+          "exclusiveMinimum": 0,
+          "title": "Timeoutseconds",
+          "type": "integer"
+        },
+        "maxTurns": {
+          "exclusiveMinimum": 0,
+          "title": "Maxturns",
+          "type": "integer"
+        },
+        "maxToolCalls": {
+          "minimum": 0,
+          "title": "Maxtoolcalls",
+          "type": "integer"
+        },
+        "maxChildAgents": {
+          "minimum": 0,
+          "title": "Maxchildagents",
+          "type": "integer"
+        },
+        "maxDelegationDepth": {
+          "minimum": 0,
+          "title": "Maxdelegationdepth",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "timeoutSeconds",
+        "maxTurns",
+        "maxToolCalls",
+        "maxChildAgents",
+        "maxDelegationDepth"
+      ],
+      "title": "ExecutionBudget",
+      "type": "object"
+    },
+    "FrozenConfigurationRef": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "ORCHESTRATION",
+          "title": "Kind",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "contentHash": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Contenthash",
+          "type": "string"
+        },
+        "schemaVersion": {
+          "minLength": 1,
+          "title": "Schemaversion",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "contentHash",
+        "schemaVersion"
+      ],
+      "title": "FrozenConfigurationRef",
+      "type": "object"
+    },
+    "FrozenInputRef": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "enum": [
+            "VERIFICATION",
+            "PLANNING",
+            "CLAIM_PROPOSAL",
+            "EVIDENCE_QUESTION"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "contentHash": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Contenthash",
+          "type": "string"
+        },
+        "schemaVersion": {
+          "minLength": 1,
+          "title": "Schemaversion",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id",
+        "contentHash",
+        "schemaVersion"
+      ],
+      "title": "FrozenInputRef",
+      "type": "object"
+    },
+    "FrozenModelConfiguration": {
+      "additionalProperties": false,
+      "properties": {
+        "provider": {
+          "minLength": 1,
+          "title": "Provider",
+          "type": "string"
+        },
+        "model": {
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "baseUrl": {
+          "minLength": 1,
+          "title": "Baseurl",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "model",
+        "baseUrl"
+      ],
+      "title": "FrozenModelConfiguration",
+      "type": "object"
+    },
+    "JsonValue": {},
+    "PlanVersionRef": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        },
+        "contentHash": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Contenthash",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "contentHash"
+      ],
+      "title": "PlanVersionRef",
+      "type": "object"
+    },
+    "PlanningRunRef": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "PLANNING_RUN",
+          "title": "Kind",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "title": "PlanningRunRef",
+      "type": "object"
+    },
+    "RegisteredVersion": {
+      "additionalProperties": false,
+      "properties": {
+        "key": {
+          "minLength": 1,
+          "title": "Key",
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "key",
+        "version"
+      ],
+      "title": "RegisteredVersion",
+      "type": "object"
+    },
+    "RepositoryRef": {
+      "additionalProperties": false,
+      "properties": {
+        "repositoryId": {
+          "format": "uuid",
+          "title": "Repositoryid",
+          "type": "string"
+        },
+        "targetSha": {
+          "pattern": "^(?:[0-9a-f]{40}|[0-9a-f]{64})$",
+          "title": "Targetsha",
+          "type": "string"
+        }
+      },
+      "required": [
+        "repositoryId",
+        "targetSha"
+      ],
+      "title": "RepositoryRef",
+      "type": "object"
+    },
+    "VerificationRunRef": {
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "ANALYSIS_RUN",
+          "title": "Kind",
+          "type": "string"
+        },
+        "id": {
+          "format": "uuid",
+          "title": "Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "id"
+      ],
+      "title": "VerificationRunRef",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "taskKind": {
+            "const": "DELIVERY_VERIFY"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "businessRef": {
+            "properties": {
+              "kind": {
+                "const": "ANALYSIS_RUN"
+              }
+            }
+          },
+          "inputSnapshotRef": {
+            "properties": {
+              "kind": {
+                "const": "VERIFICATION"
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "taskKind": {
+            "enum": [
+              "PLAN_DRAFT",
+              "PLAN_REFINE"
+            ]
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "businessRef": {
+            "properties": {
+              "kind": {
+                "const": "PLANNING_RUN"
+              }
+            }
+          },
+          "inputSnapshotRef": {
+            "properties": {
+              "kind": {
+                "const": "PLANNING"
+              }
+            }
+          },
+          "planVersionRef": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "taskKind": {
+            "const": "DELIVERY_CLAIM_PROPOSE"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "businessRef": {
+            "properties": {
+              "kind": {
+                "const": "CLAIM_PROPOSAL_RUN"
+              }
+            }
+          },
+          "inputSnapshotRef": {
+            "properties": {
+              "kind": {
+                "const": "CLAIM_PROPOSAL"
+              }
+            }
+          },
+          "planVersionRef": {
+            "type": "null"
+          },
+          "repositoryRefs": {
+            "maxItems": 0
+          },
+          "allowedEvidenceIds": {
+            "maxItems": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "taskKind": {
+            "const": "EVIDENCE_QUESTION"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "businessRef": {
+            "properties": {
+              "kind": {
+                "const": "EVIDENCE_QUESTION_RUN"
+              }
+            }
+          },
+          "inputSnapshotRef": {
+            "properties": {
+              "kind": {
+                "const": "EVIDENCE_QUESTION"
+              }
+            }
+          },
+          "planVersionRef": {
+            "type": "null"
+          },
+          "repositoryRefs": {
+            "maxItems": 0
+          },
+          "allowedEvidenceIds": {
+            "maxItems": 20,
+            "minItems": 1
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "contractVersion": {
+      "const": "agent-task-v1",
+      "title": "Contractversion",
+      "type": "string"
+    },
+    "taskId": {
+      "format": "uuid",
+      "title": "Taskid",
+      "type": "string"
+    },
+    "attemptId": {
+      "format": "uuid",
+      "title": "Attemptid",
+      "type": "string"
+    },
+    "fencingToken": {
+      "minimum": 1,
+      "title": "Fencingtoken",
+      "type": "integer"
+    },
+    "workerId": {
+      "minLength": 1,
+      "title": "Workerid",
+      "type": "string"
+    },
+    "correlationId": {
+      "minLength": 1,
+      "title": "Correlationid",
+      "type": "string"
+    },
+    "projectId": {
+      "format": "uuid",
+      "title": "Projectid",
+      "type": "string"
+    },
+    "taskKind": {
+      "enum": [
+        "DELIVERY_VERIFY",
+        "PLAN_DRAFT",
+        "PLAN_REFINE",
+        "DELIVERY_CLAIM_PROPOSE",
+        "EVIDENCE_QUESTION"
+      ],
+      "title": "Taskkind",
+      "type": "string"
+    },
+    "businessRef": {
+      "discriminator": {
+        "mapping": {
+          "ANALYSIS_RUN": "#/$defs/VerificationRunRef",
+          "CLAIM_PROPOSAL_RUN": "#/$defs/ClaimProposalRunRef",
+          "EVIDENCE_QUESTION_RUN": "#/$defs/EvidenceQuestionRunRef",
+          "PLANNING_RUN": "#/$defs/PlanningRunRef"
+        },
+        "propertyName": "kind"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/VerificationRunRef"
+        },
+        {
+          "$ref": "#/$defs/PlanningRunRef"
+        },
+        {
+          "$ref": "#/$defs/ClaimProposalRunRef"
+        },
+        {
+          "$ref": "#/$defs/EvidenceQuestionRunRef"
+        }
+      ],
+      "title": "Businessref"
+    },
+    "leaseExpiresAt": {
+      "format": "date-time",
+      "title": "Leaseexpiresat",
+      "type": "string"
+    },
+    "leaseDurationSeconds": {
+      "maximum": 300,
+      "minimum": 15,
+      "title": "Leasedurationseconds",
+      "type": "integer"
+    },
+    "inputSnapshotRef": {
+      "$ref": "#/$defs/FrozenInputRef"
+    },
+    "planVersionRef": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/PlanVersionRef"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "repositoryRefs": {
+      "items": {
+        "$ref": "#/$defs/RepositoryRef"
+      },
+      "title": "Repositoryrefs",
+      "type": "array"
+    },
+    "allowedEvidenceIds": {
+      "items": {
+        "format": "uuid",
+        "type": "string"
+      },
+      "title": "Allowedevidenceids",
+      "type": "array"
+    },
+    "agentManifest": {
+      "$ref": "#/$defs/AgentManifest"
+    },
+    "budget": {
+      "$ref": "#/$defs/ExecutionBudget"
+    }
+  },
+  "required": [
+    "contractVersion",
+    "taskId",
+    "attemptId",
+    "fencingToken",
+    "workerId",
+    "correlationId",
+    "projectId",
+    "taskKind",
+    "businessRef",
+    "leaseExpiresAt",
+    "leaseDurationSeconds",
+    "inputSnapshotRef",
+    "planVersionRef",
+    "repositoryRefs",
+    "allowedEvidenceIds",
+    "agentManifest",
+    "budget"
+  ],
+  "title": "AgentTaskAssignment",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:devproof:contracts:task-assignment-v1"
+}

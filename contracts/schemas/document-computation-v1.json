@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "ChunkComputation": {
+      "additionalProperties": false,
+      "properties": {
+        "chunkIndex": {
+          "minimum": 0,
+          "title": "Chunkindex",
+          "type": "integer"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "textHash": {
+          "title": "Texthash",
+          "type": "string"
+        },
+        "locator": {
+          "additionalProperties": true,
+          "title": "Locator",
+          "type": "object"
+        },
+        "embedding": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "number"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Embedding"
+        }
+      },
+      "required": [
+        "chunkIndex",
+        "content",
+        "textHash",
+        "locator",
+        "embedding"
+      ],
+      "title": "ChunkComputation",
+      "type": "object"
+    },
+    "IndexingOutcome": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "AVAILABLE",
+            "UNAVAILABLE"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Code"
+        },
+        "message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "IndexingOutcome",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": "document-computation-v1",
+      "default": "document-computation-v1",
+      "title": "Schemaversion",
+      "type": "string"
+    },
+    "contentHash": {
+      "title": "Contenthash",
+      "type": "string"
+    },
+    "configurationHash": {
+      "title": "Configurationhash",
+      "type": "string"
+    },
+    "mediaType": {
+      "title": "Mediatype",
+      "type": "string"
+    },
+    "parserVersion": {
+      "title": "Parserversion",
+      "type": "string"
+    },
+    "normalizedText": {
+      "title": "Normalizedtext",
+      "type": "string"
+    },
+    "normalizedTextHash": {
+      "title": "Normalizedtexthash",
+      "type": "string"
+    },
+    "metadata": {
+      "additionalProperties": true,
+      "title": "Metadata",
+      "type": "object"
+    },
+    "ocrConfidence": {
+      "default": null,
+      "title": "Ocrconfidence",
+      "type": "null"
+    },
+    "indexVersion": {
+      "title": "Indexversion",
+      "type": "string"
+    },
+    "indexing": {
+      "$ref": "#/$defs/IndexingOutcome"
+    },
+    "chunks": {
+      "items": {
+        "$ref": "#/$defs/ChunkComputation"
+      },
+      "minItems": 1,
+      "title": "Chunks",
+      "type": "array"
+    }
+  },
+  "required": [
+    "contentHash",
+    "configurationHash",
+    "mediaType",
+    "parserVersion",
+    "normalizedText",
+    "normalizedTextHash",
+    "metadata",
+    "indexVersion",
+    "indexing",
+    "chunks"
+  ],
+  "title": "DocumentComputation",
+  "type": "object"
+}

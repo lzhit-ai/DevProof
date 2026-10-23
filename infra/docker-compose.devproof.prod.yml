@@ -1,0 +1,77 @@
+# Use after docker-compose.refactor.yml. Requires Docker Compose >= 2.24.4.
+# Matches the original production project's existing volume namespace.
+name: ai-codereview
+
+x-production-logging: &production_logging
+  driver: local
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  postgres:
+    ports: !reset []
+    restart: unless-stopped
+    mem_limit: ${POSTGRES_MEMORY_LIMIT:-1g}
+    logging: *production_logging
+
+  redis:
+    restart: unless-stopped
+    mem_limit: ${REDIS_MEMORY_LIMIT:-256m}
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "${REDIS_MAXMEMORY:-128mb}", "--maxmemory-policy", "allkeys-lru"]
+    logging: *production_logging
+
+  migrate:
+    image: devproof-business:${DEVPROOF_IMAGE_TAG:-local}
+    mem_limit: ${MIGRATION_MEMORY_LIMIT:-1g}
+    logging: *production_logging
+
+  business:
+    image: devproof-business:${DEVPROOF_IMAGE_TAG:-local}
+    restart: unless-stopped
+    mem_limit: ${BUSINESS_MEMORY_LIMIT:-1g}
+    cpus: ${BUSINESS_CPU_LIMIT:-2}
+    environment:
+      JAVA_CORS_ORIGINS: ${JAVA_CORS_ORIGINS:?set HTTPS origins for production}
+    logging: *production_logging
+
+  agent-worker:
+    image: devproof-agent:${DEVPROOF_IMAGE_TAG:-local}
+    restart: unless-stopped
+    mem_limit: ${AGENT_MEMORY_LIMIT:-2g}
+    cpus: ${AGENT_CPU_LIMIT:-2}
+    environment:
+      WORKER_ID: ${AGENT_WORKER_ID:?set a unique production Worker identity}
+    logging: *production_logging
+
+  gateway:
+    profiles: ["development"]
+    ports: !reset []
+
+  frontend:
+    image: devproof-frontend:${DEVPROOF_IMAGE_TAG:-local}
+    build: !override
+      context: ../frontend
+      dockerfile: Dockerfile.prod
+    ports: !override ["80:80", "443:443"]
+    environment: !override
+      DEVPROOF_SERVER_NAME: ${PUBLIC_SERVER_NAME:?set production server names}
+      NGINX_ENVSUBST_FILTER: '^DEVPROOF_SERVER_NAME$'
+    volumes: !override
+      - ${TLS_CERT_DIR:?set directory containing fullchain.pem and privkey.pem}:/etc/nginx/certs:ro
+      - ./nginx.devproof.prod.conf.template:/etc/nginx/templates/default.conf.template:ro
+    depends_on: !override
+      business:
+        condition: service_healthy
+    restart: unless-stopped
+    mem_limit: ${FRONTEND_MEMORY_LIMIT:-128m}
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1/health/live"]
+      interval: 10s
+      timeout: 3s
+      retries: 6
+    logging: *production_logging
+
+networks:
+  default:
+    driver: bridge
